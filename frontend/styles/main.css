@@ -1,0 +1,48 @@
+/* Add your styles here */
+
+/* Button Styles */
+.btn {
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-weight: bold;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary {
+  background-color: #007bff; /* Primary color */
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3; /* Darker shade on hover */
+}
+
+.btn-secondary {
+  background-color: #6c757d; /* Secondary color */
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268; /* Darker shade on hover */
+}
+
+/* Navbar Styles */
+.navbar {
+  background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white */
+}
+
+.nav-link {
+  color: white; /* Text color for links */
+}
+
+/* Hero Section */
+.hero {
+  color: white; /* Text color for hero section */
+}
+
+/* Footer Styles */
+.footer {
+  background-color: rgba(0, 0, 0, 0.8); /* Dark background for footer */
+  color: white; /* Text color for footer */
+}

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - RUDASUMBWA</title>
+    <link rel="stylesheet" href="styles/interactive student dashboard.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container">
+                    <img src="images/logo.PNG" alt="Logo" class="logo">
+                    <h1 class="logo-text">RUDASUMBWA</h1>
+                </div>
+                <button class="sidebar-toggle"><i class="ri-menu-line"></i></button>
+            </div>
+            <ul class="menu">
+                <li class="menu-item active" data-section="dashboard"><a href="#dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a></li>
+                <li class="menu-item" data-section="courses"><a href="#courses"><i class="ri-book-open-line"></i><span>Courses</span></a></li>
+                <li class="menu-item" data-section="quizzes"><a href="#quizzes"><i class="ri-question-line"></i><span>Quizzes</span></a></li>
+                <li class="menu-item" data-section="clubs"><a href="#clubs"><i class="ri-group-line"></i><span>Clubs</span></a></li>
+                <li class="menu-item" data-section="settings"><a href="#settings"><i class="ri-settings-3-line"></i><span>Settings</span></a></li>
+                <li class="menu-item" data-section="logout"><a href="#logout"><i class="ri-logout-box-r-line"></i><span>Logout</span></a></li>
+            </ul>
+        </nav>
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <button class="mobile-menu-button-main"><i class="ri-menu-line"></i></button>
+                </div>
+                <div class="header-right">
+                    <button class="icon-button"><i class="ri-notification-3-line"></i></button>
+                    <button class="icon-button chat-button"><i class="ri-chat-3-line"></i></button>
+                    <div class="user-profile-dropdown">
+                        <div class="user-profile-trigger">
+                            <img src="https://via.placeholder.com/40" alt="Profile Picture" class="profile-pic">
+                            <div class="user-info">
+                                <span class="user-name">Bushoki TSS</span>
+                                <span class="user-id">ID: 12345</span>
+                            </div>
+                            <i class="ri-arrow-down-s-line dropdown-arrow"></i>
+                        </div>
+                        <div class="dropdown-content">
+                            <a href="#profile-settings"><i class="ri-user-line"></i> Edit Profile</a>
+                            <a href="#change-password"><i class="ri-lock-line"></i> Change Password</a>
+                            <a href="#logout-action"><i class="ri-logout-box-r-line"></i> Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="dashboard-content">
+                    <div class="welcome-section">
+                        <div class="welcome-header">
+                            <h2>Welcome back, <span id="welcome-user-name">Bushoki TSS</span>!</h2>
+                        </div>
+                        <div class="quick-actions">
+                            <button class="action-btn primary" data-section-target="notes"><i class="ri-file-text-line"></i> Download Notes</button>
+                            <button class="action-btn secondary" data-section-target="timetable"><i class="ri-calendar-line"></i> View Timetable</button>
+                            <button class="action-btn primary" data-section-target="clubs"><i class="ri-group-line"></i> Explore Clubs</button>
+                            <button class="action-btn secondary chat-button"><i class="ri-chat-3-line"></i> Club Chat</button>
+                        </div>
+                    </div>
+
+                    <!-- Progress Rings (Academic Summary) -->
+                    <div class="progress-section">
+                        <h3>Academic Progress</h3>
+                        <div class="progress-rings">
+                            <div class="progress-ring">
+                                <svg class="progress-svg" viewBox="0 0 100 100">
+                                    <circle class="progress-bg" cx="50" cy="50" r="45"></circle>
+                                    <circle class="progress-fill" cx="50" cy="50" r="45" style="--progress: 85;"></circle>
+                                </svg>
+                                <div class="progress-text">
+                                    <span class="progress-percentage" id="summary-quiz-avg">85%</span>
+                                    <span class="progress-label">Avg Quiz Score</span>
+                                </div>
+                            </div>
+                            <div class="progress-ring">
+                                <svg class="progress-svg" viewBox="0 0 100 100">
+                                    <circle class="progress-bg" cx="50" cy="50" r="45"></circle>
+                                    <circle class="progress-fill" cx="50" cy="50" r="45" style="--progress: 50;"></circle>
+                                </svg>
+                                <div class="progress-text">
+                                    <span class="progress-percentage" id="summary-courses-count">5</span>
+                                    <span class="progress-label">Courses Enrolled</span>
+                                </div>
+                            </div>
+                            <div class="progress-ring">
+                                <svg class="progress-svg" viewBox="0 0 100 100">
+                                    <circle class="progress-bg" cx="50" cy="50" r="45"></circle>
+                                    <circle class="progress-fill" cx="50" cy="50" r="45" style="--progress: 20;"></circle>
+                                </svg>
+                                <div class="progress-text">
+                                    <span class="progress-percentage" id="summary-assignments-count">2</span>
+                                    <span class="progress-label">Upcoming Assignments</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Grid (Mini Leaderboard, Notifications, Gospel) -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="ri-trophy-line"></i></div>
+                            <h3>Top Students</h3>
+                            <ol id="mini-leaderboard-list"></ol>
+                            <button class="btn-secondary view-all-btn" data-section-target="leaderboard">View Full Leaderboard</button>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="ri-notification-3-line"></i></div>
+                            <h3>Recent Notifications & News</h3>
+                            <ul id="notifications-list"></ul>
+                            <button class="btn-secondary view-all-btn" data-section-target="messages">View All</button>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="ri-book-open-line"></i></div>
+                            <h3>Gospel of the Day</h3>
+                            <div id="gospel-content">
+                                <p>Loading Gospel...</p>
+                            </div>
+                            <button class="btn-secondary view-all-btn" data-section-target="gospel">Read More</button>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="ri-calendar-event-line"></i></div>
+                            <h3>Upcoming Spiritual Events</h3>
+                            <ul id="spiritual-events-list">
+                                <li>No upcoming events.</li>
+                            </ul>
+                            <button class="btn-secondary view-all-btn" data-section-target="events">View All Events</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Courses Section -->
+            <section id="courses" class="content-section">
+                <h2>My Courses & Learning Materials</h2>
+                <div class="course-materials-grid">
+                    <div class="card">
+                        <h3>My Enrolled Courses</h3>
+                        <ul id="full-courses-list"></ul>
+                    </div>
+                    <div class="card">
+                        <h3>Teacher Notes</h3>
+                        <ul id="teacher-notes-list"></ul>
+                    </div>
+                    <div class="card">
+                        <h3>Upcoming Quizzes</h3>
+                        <ul id="upcoming-quizzes-list"></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Clubs Section -->
+            <section id="clubs" class="content-section">
+                <h2>Clubs & Activities</h2>
+                <div class="clubs-grid">
+                    <div class="card">
+                        <h3>My Clubs</h3>
+                        <ul id="my-clubs-list"></ul>
+                    </div>
+                    <div class="card">
+                        <h3>Explore Other Clubs</h3>
+                        <ul id="explore-clubs-list"></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Chat Section -->
+            <section id="chat" class="content-section">
+                <h2>Club Chats</h2>
+                <div class="chat-interface">
+                    <div class="chat-sidebar">
+                        <h3>Your Groups</h3>
+                        <ul id="chat-groups-list"></ul>
+                    </div>
+                    <div class="chat-main">
+                        <div class="chat-header">
+                            <h3 id="current-chat-group-name">Select a Group</h3>
+                        </div>
+                        <div class="chat-messages" id="chat-messages-display">
+                            <!-- Messages will be loaded here -->
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" id="chat-message-input" placeholder="Type your message...">
+                            <button id="send-message-button"><i class="ri-send-plane-fill"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Placeholder Sections for other nav items -->
+            <section id="quizzes" class="content-section">
+                <h2>Quizzes</h2>
+                <p>Content for Quizzes will go here.</p>
+            </section>
+            <section id="messages" class="content-section">
+                <h2>Messages & Announcements</h2>
+                <p>Content for Messages will go here.</p>
+            </section>
+            <section id="lectiones" class="content-section">
+                <h2>LECTIONES</h2>
+                <p>Content for LECTIONES will go here.</p>
+            </section>
+            <section id="settings" class="content-section">
+                <h2>Settings</h2>
+                <p>Content for Settings will go here.</p>
+            </section>
+            <section id="logout" class="content-section">
+                <h2>Logout</h2>
+                <p>Logging out...</p>
+            </section>
+
+        </main>
+    </div>
+    <script src="js/student-dashboard.js"></script>
+</body>
+</html>

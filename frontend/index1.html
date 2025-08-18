@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Petit Séminaire Saint Léon Kabgayi - RUDASUMBWA</title>
+  <link rel="stylesheet" href="styles/index.css">
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="dark">
+  <!-- Animated Background Particles -->
+  <div class="particles-container" id="particles-container"></div>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <img src="images/logo.PNG" alt="School Logo" class="nav-logo" />
+        <div class="brand-text"><span>RUDASUMBWA</span></div>
+      </div>
+      <div class="nav-menu">
+        <button class="nav-link" onclick="scrollToSection('hero')">Home</button>
+        <button class="nav-link" onclick="scrollToSection('about')">About</button>
+        <button class="nav-link" onclick="scrollToSection('leaderboard')">Students</button>
+        <button class="nav-link" onclick="scrollToSection('events')">Events</button>
+        <button class="nav-link" onclick="scrollToSection('clubs')">Clubs</button>
+        <button class="nav-link" onclick="scrollToSection('news')">News</button>
+        <button class="nav-link" onclick="scrollToSection('contact')">Contact</button>
+                <a class="btn-signin" href="login.html"><i class="fas fa-sign-in-alt"></i> Sign In</a>
+        <a class="btn-signup" href="signup.html"><i class="fas fa-user-plus"></i> Sign Up</a>
+      </div>
+      <button class="mobile-menu-btn" onclick="toggleMobileMenu()"><i class="fas fa-bars" id="mobile-menu-icon"></i></button>
+    </div>
+    <div class="mobile-menu" id="mobile-menu">
+      <div class="mobile-menu-content">
+        <button class="mobile-nav-link" onclick="scrollToSection('hero')">Home</button>
+        <button class="mobile-nav-link" onclick="scrollToSection('about')">About</button>
+        <button class="mobile-nav-link" onclick="scrollToSection('leaderboard')">Students</button>
+        <button class="mobile-nav-link" onclick="scrollToSection('events')">Events</button>
+        <button class="mobile-nav-link" onclick="scrollToSection('clubs')">Clubs</button>
+        <button class="mobile-nav-link" onclick="scrollToSection('news')">News</button>
+        <button class="mobile-nav-link" onclick="scrollToSection('contact')">Contact</button>
+                <a class="btn-signin" href="login.html"><i class="fas fa-sign-in-alt"></i> Sign In</a>
+        <a class="btn-signup" href="signup.html"><i class="fas fa-user-plus"></i> Sign Up</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="hero" class="hero">
+    <div class="hero-video-container">
+      <video class="hero-bg" autoplay muted loop playsinline>
+        <source src="images/0.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+      <video class="hero-bg" autoplay muted loop playsinline>
+        <source src="images/1.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+      <video class="hero-bg" autoplay muted loop playsinline>
+        <source src="images/2.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+      <video class="hero-bg" autoplay muted loop playsinline>
+        <source src="images/3.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+      <video class="hero-bg" autoplay muted loop playsinline>
+        <source src="images/4.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div>
+    <div class="overlay"></div>
+    <div class="hero-logo">
+      <span class="hero-brand">RUDASUMBWA</span>
+      <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=60&h=60&fit=crop" alt="School Logo" class="school-logo">
+    </div>
+    <div class="hero-content">
+      <h1 class="school-name">Petit Séminaire<br>Saint Léon Kabgayi</h1>
+      <p class="motto">“Paravi Lucernam Christo Meo”</p>
+      <div class="cta-buttons">
+        <a class="btn btn-primary" href="signup.html">Sign Up</a>
+        <a class="btn btn-secondary" href="login.html">Sign In</a>
+        <a href="#clubs" class="btn btn-glass">Explore Clubs</a>
+      </div>
+    </div>
+    <div class="scroll-indicator"><span></span></div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="about">
+    <div class="about-content">
+      <div class="about-text">
+        <h2>About Our Seminary</h2>
+        <p>Petit Séminaire Saint Léon Kabgayi is a prestigious Catholic seminary dedicated to nurturing young minds in faith, knowledge, and service. Founded on the principles of academic excellence and spiritual growth, we prepare future leaders for the Church and society.</p>
+        <p>Our mission is to provide holistic education that combines rigorous academic training with deep spiritual formation, fostering character development and moral leadership.</p>
+        <p>With a rich tradition of musical excellence and cultural heritage, our students participate in various ensembles including our renowned brass band, which has been a cornerstone of our educational program for decades.</p>
+      </div>
+      <div class="about-image">
+        <img src="images/fanfare.png" alt="Seminary Brass Band" />
+        <div class="about-badge">
+          <div class="badge-title">Excellence</div>
+          <div class="badge-subtitle">in Education</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Leaderboard Section -->
+  <section id="leaderboard" class="leaderboard">
+    <h2 class="section-title">🏅 Top Students</h2>
+    <p class="section-subtitle">Celebrating academic excellence and dedication</p>
+    <div class="leaderboard-grid" id="leaderboard-grid">
+      <!-- Example static cards, replace with JS for dynamic -->
+      <div class="student-card gold">
+        <div class="medal">🥇</div>
+        <h3>Jane Uwimana</h3>
+        <p>Class: S3A</p>
+        <p>Score: 98%</p>
+      </div>
+      <div class="student-card silver">
+        <div class="medal">🥈</div>
+        <h3>Eric Nshimiyimana</h3>
+        <p>Class: S2B</p>
+        <p>Score: 95%</p>
+      </div>
+      <div class="student-card bronze">
+        <div class="medal">🥉</div>
+        <h3>Alice Mukamana</h3>
+        <p>Class: S1C</p>
+        <p>Score: 93%</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Events Section -->
+  <section id="events" class="events">
+    <h2 class="section-title">📅 Upcoming Spiritual Events</h2>
+    <p class="section-subtitle">Stay connected with our spiritual journey</p>
+    <div class="events-grid" id="events-grid">
+      <!-- Events will be loaded dynamically -->
+    </div>
+  </section>
+
+  <!-- Gospel Section -->
+  <section id="gospel" class="gospel">
+    <h2 class="section-title">📖 Holy Gospel of the Day</h2>
+    <p class="section-subtitle">Reflect, pray, and walk in faith</p>
+    <div class="gospel-card">
+      <h4>Today's Reflection</h4>
+      <blockquote id="gospel-text">
+        “John 15:5 — I am the vine, you are the branches…”
+        <footer>"Stay connected to the word of God to succeed."</footer>
+      </blockquote>
+      <div class="gospel-actions">
+        <button class="submit-btn">Read Full Gospel</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Clubs Section -->
+  <section id="clubs" class="clubs">
+    <h2 class="section-title">🎓 Our School Clubs</h2>
+    <p class="section-subtitle">Explore the spirit of community and innovation</p>
+    <div class="clubs-grid" id="clubs-grid">
+      <div class="club-card">
+        <img src="media/clubs/science.png" alt="Science Club">
+        <h4>Science Club</h4>
+        <p>"Exploring God's creation through science."</p>
+        <div class="club-info">
+          <span class="club-members">Leader: Jean Bosco</span>
+          <span class="club-badge">Active</span>
+        </div>
+      </div>
+      <div class="club-card">
+        <img src="media/clubs/music.png" alt="Music Club">
+        <h4>Music Club</h4>
+        <p>"Harmony in faith and sound."</p>
+        <div class="club-info">
+          <span class="club-members">Leader: Alice Uwase</span>
+          <span class="club-badge">Active</span>
+        </div>
+      </div>
+      <div class="club-card">
+        <img src="media/clubs/debate.png" alt="Debate Club">
+        <h4>Debate Club</h4>
+        <p>"Speak truth, seek wisdom."</p>
+        <div class="club-info">
+          <span class="club-members">Leader: David Niyonzima</span>
+          <span class="club-badge">Active</span>
+        </div>
+      </div>
+      <div class="club-card">
+        <img src="media/clubs/tech.png" alt="Tech Club">
+        <h4>Tech Club</h4>
+        <p>"Innovate for the future."</p>
+        <div class="club-info">
+          <span class="club-members">Leader: Grace Ingabire</span>
+          <span class="club-badge">Active</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- News Section -->
+  <section id="news" class="news">
+    <h2 class="section-title">📰 Latest News</h2>
+    <p class="section-subtitle">Stay updated with our latest happenings</p>
+    <div class="news-grid" id="news-grid">
+      <div class="news-card">
+        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&h=400&fit=crop" alt="News 1">
+        <div class="news-content">
+          <div class="news-date">June 2024</div>
+          <h3>New Science Lab Inaugurated</h3>
+          <p>Our new science lab is now open, providing students with state-of-the-art equipment for hands-on learning.</p>
+          <button class="read-more-btn">Read More</button>
+        </div>
+      </div>
+      <div class="news-card">
+        <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?w=600&h=400&fit=crop" alt="News 2">
+        <div class="news-content">
+          <div class="news-date">May 2024</div>
+          <h3>Music Club Wins National Award</h3>
+          <p>Congratulations to our Music Club for winning the National School Music Competition!</p>
+          <button class="read-more-btn">Read More</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LECTIONES Section -->
+  <section id="lectiones" class="lectiones">
+    <h2 class="section-title neon-glow">✨ LECTIONES</h2>
+    <p class="section-subtitle">Discover. Think. Test Yourself.</p>
+    <div class="lectiones-grid">
+      <a href="#" class="lectiones-card">
+        <h3>📝 Notes</h3>
+        <p>Beautifully summarized lessons across all subjects.</p>
+      </a>
+      <a href="#" class="lectiones-card">
+        <h3>🧠 Brain Wave</h3>
+        <p>Daily brain teasers to boost your thinking power.</p>
+      </a>
+      <a href="#" class="lectiones-card">
+        <h3>📊 Quiz</h3>
+        <p>Test your knowledge with quick, interactive quizzes.</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" class="contact">
+    <h2 class="section-title">📞 Contact Us</h2>
+    <p class="section-subtitle">Get in touch with our seminary</p>
+    <div class="contact-content">
+      <div class="contact-info">
+        <h3>Get in Touch</h3>
+        <div class="contact-item"><i class="fas fa-map-marker-alt contact-icon"></i><span>Kabgayi, Muhanga District, Rwanda</span></div>
+        <div class="contact-item"><i class="fas fa-phone contact-icon"></i><span>+250 788 123 456</span></div>
+        <div class="contact-item"><i class="fas fa-envelope contact-icon"></i><span>info@seminairekabgayi.rw</span></div>
+        <div class="office-hours">
+          <h4>Office Hours</h4>
+          <div class="hours-list">
+            <p>Monday - Friday: 8:00 AM - 5:00 PM</p>
+            <p>Saturday: 9:00 AM - 1:00 PM</p>
+            <p>Sunday: Closed</p>
+          </div>
+        </div>
+      </div>
+      <div class="contact-form">
+        <h3>Send us a message</h3>
+        <form id="contact-form">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" name="name" placeholder="Your name" required>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" placeholder="Your email" required>
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea name="message" rows="4" placeholder="Your message" required></textarea>
+          </div>
+          <button type="submit" class="submit-btn">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <div class="footer-brand">
+          <div class="logo-circle"><span>SL</span></div>
+          <span class="footer-brand-text">RUDASUMBWA</span>
+        </div>
+        <p class="footer-description">Petit Séminaire Saint Léon Kabgayi - Nurturing faith, knowledge, and service.</p>
+      </div>
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><button onclick="scrollToSection('about')">About Us</button></li>
+          <li><button onclick="scrollToSection('events')">Events</button></li>
+          <li><button onclick="scrollToSection('clubs')">Clubs</button></li>
+          <li><button onclick="scrollToSection('news')">News</button></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Academic</h4>
+        <ul>
+          <li><button onclick="scrollToSection('lectiones')">LECTIONES</button></li>
+          <li><button onclick="scrollToSection('leaderboard')">Student Rankings</button></li>
+          <li><a href="#">Academic Calendar</a></li>
+          <li><a href="#">Resources</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Contact Info</h4>
+        <div class="footer-contact">
+          <p>Kabgayi, Muhanga District</p>
+          <p>Rwanda</p>
+          <p>+250 788 123 456</p>
+          <p>info@seminairekabgayi.rw</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 Petit Séminaire Saint Léon Kabgayi. All rights reserved.</p>
+      <p class="footer-motto">"Paravi Lucernam Christo Meo"</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/particles.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/leaderboard.js"></script>
+<script>
+// Dynamic Spiritual Events Loader
+document.addEventListener('DOMContentLoaded', function() {
+  const eventsGrid = document.getElementById('events-grid');
+  if (!eventsGrid) return;
+  fetch('/api/events')
+    .then(res => res.json())
+    .then(events => {
+      if (!Array.isArray(events) || events.length === 0) {
+        eventsGrid.innerHTML = '<div style="color:#888;">No upcoming events.</div>';
+        return;
+      }
+      eventsGrid.innerHTML = events.map(ev => `
+        <div class="event-card">
+          <div class="event-date"><h3>${ev.date}</h3><span>${ev.type}</span></div>
+          <div class="event-info">
+            <h4>${ev.title}</h4>
+            <p>${ev.description}</p>
+          </div>
+        </div>
+      `).join('');
+    })
+    .catch(() => {
+      eventsGrid.innerHTML = '<div style="color:#e53e3e;">Failed to load events.</div>';
+    });
+});
+</script>
+  <script>
+    <script>
+    window.addEventListener('DOMContentLoaded', function() {
+      const videos = document.querySelectorAll('.hero-video-container video');
+      let current = 0;
+      videos.forEach((video, idx) => {
+        video.muted = true;
+        video.style.display = idx === 0 ? 'block' : 'none';
+        video.style.position = 'absolute';
+        video.style.top = 0;
+        video.style.left = 0;
+        video.style.width = '100%';
+        video.style.height = '100%';
+        video.style.objectFit = 'cover';
+        video.style.zIndex = 1;
+      });
+      if (videos.length > 0) {
+        videos[0].play().catch(function(){});
+        videos.forEach((video, idx) => {
+          video.onended = function() {
+            video.style.display = 'none';
+            current = (idx + 1) % videos.length;
+            videos[current].style.display = 'block';
+            videos[current].currentTime = 0;
+            videos[current].play().catch(function(){});
+          };
+        });
+      }
+    });
+  </script>
+  <script src="js/redirect.js"></script>
+</body>
+</body>
+</html>

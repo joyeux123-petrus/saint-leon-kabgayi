@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Teacher's Quiz Creation</title>
+  <link rel="stylesheet" href="styles/teacher-style.css" />
+</head>
+<body>
+  <section id="teacher-quiz-section" class="container">
+    <h2>Create a New Quiz</h2>
+    <form id="quiz-form">
+      <input type="text" id="lesson-name" placeholder="Enter Lesson Name" required />
+      <select id="class-select" required>
+        <option value="">Select Class</option>
+        <option value="Grade 7">Grade 7</option>
+        <option value="Grade 8">Grade 8</option>
+        <option value="Grade 9">Grade 9</option>
+        <option value="Grade 10">Grade 10</option>
+        <option value="Grade 11">Grade 11</option>
+        <option value="Grade 12">Grade 12</option>
+      </select>
+
+      <label for="start-time">Quiz Start Time:</label>
+      <input type="datetime-local" id="start-time" required />
+
+      <label for="end-time">Quiz End Time:</label>
+      <input type="datetime-local" id="end-time" required />
+
+      <label for="per-question-time">Per Question Time (seconds, 0 for no limit):</label>
+      <input type="number" id="per-question-time" min="0" value="0" />
+
+      <label for="timing-mode">Timing Mode:</label>
+      <select id="timing-mode">
+        <option value="overall">Overall Quiz Time</option>
+        <option value="per-question">Per Question Time</option>
+      </select>
+
+      <div id="questions-section">
+        <!-- Questions will be dynamically added here -->
+      </div>
+
+      <button type="button" id="add-question-btn" class="btn-secondary">Add Question</button>
+      <button type="submit" class="btn-primary">Create Quiz</button>
+    </form>
+  </section>
+
+  <template id="question-template">
+    <div class="question">
+      <input type="text" placeholder="Enter Question" class="question-text" />
+      <select class="question-type">
+        <option value="mcq">Multiple Choice</option>
+        <option value="open-ended">Open Ended</option>
+        <option value="fill-in-the-blanks">Fill in the Blanks</option>
+        <option value="match-the-pairs">Match the Pairs</option>
+        <option value="image-based">Image-based</option>
+        <option value="audio">Audio</option>
+      </select>
+      <input type="number" placeholder="Marks" class="question-marks" min="1" />
+
+      <div class="mcq-options">
+        <input type="text" placeholder="Choice A" class="choice" />
+        <input type="text" placeholder="Choice B" class="choice" />
+        <input type="text" placeholder="Choice C" class="choice" />
+        <input type="text" placeholder="Choice D" class="choice" />
+        <select class="correct-answer">
+          <option value="A">Choice A</option>
+          <option value="B">Choice B</option>
+          <option value="C">Choice C</option>
+          <option value="D">Choice D</option>
+        </select>
+      </div>
+
+      <div class="media-url" style="display:none;">
+        <input type="text" placeholder="Enter media URL (image or audio)" class="media-url-input" />
+      </div>
+
+      <button type="button" class="remove-question-btn">Remove Question</button>
+    </div>
+  </template>
+
+  <script src="teacher-quiz.js"></script>
+</body>
+</html>

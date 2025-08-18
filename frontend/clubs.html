@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clubs - RUDASUMBWA</title>
+  <link rel="stylesheet" href="dist/core.css">
+</head>
+<body>
+  <header>
+    <h1>Clubs</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="quizzes.html">Quizzes</a>
+      <a href="lectiones.html">Lectiones</a>
+      <a href="events.html">Events</a>
+      <a href="gospel.html">Holy Gospel</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="activity.html">Activity Wall</a>
+    </nav>
+  </header>
+  <main>
+    <section>
+      <h2>School Clubs</h2>
+      <div id="clubs-content">
+        <form id="upload-club-form" style="margin:2rem 0;">
+          <label for="club-file" style="color:#38bdf8;font-weight:bold;">Upload Club Media:</label><br>
+          <input type="file" id="club-file" name="file" required style="margin-bottom:1rem;">
+          <button type="submit" style="background:#38bdf8;color:#fff;padding:0.5rem 1.5rem;border-radius:8px;">Upload</button>
+        </form>
+        <div id="upload-club-message" style="color:#38bdf8;margin-top:1rem;"></div>
+        <!-- Club portfolios and posts will be loaded here -->
+        <script>
+        // Club media upload logic
+        document.getElementById('upload-club-form').onsubmit = function(e) {
+          e.preventDefault();
+          const fileInput = document.getElementById('club-file');
+          const file = fileInput.files[0];
+          const formData = new FormData();
+          formData.append('file', file);
+          fetch('http://localhost:3001/api/upload/club', {
+            method: 'POST',
+            headers: {
+              'Authorization': localStorage.getItem('token')
+            },
+            body: formData
+          })
+          .then(res => res.json())
+          .then(data => {
+            document.getElementById('upload-club-message').innerText = data.message || 'Club media uploaded!';
+          });
+        };
+        // Example: fetch clubs from backend
+        fetch('http://localhost:3001/api/clubs')
+          .then(res => res.json())
+          .then(data => {
+            const clubsContent = document.getElementById('clubs-content');
+            clubsContent.innerHTML = '';
+            data.clubs.forEach(club => {
+              const div = document.createElement('div');
+              div.className = 'club-card';
+              div.style = 'background:rgba(56,189,248,0.15);margin:1rem 0;padding:1rem;border-radius:12px;box-shadow:0 2px 8px #38bdf8;';
+              div.innerHTML = `<h3 style='color:#38bdf8;'>${club.name}</h3><p>${club.description}</p>`;
+              clubsContent.appendChild(div);
+            });
+          });
+        </script>
+      </div>
+    </section>
+  </main>
+  <script src="js/main.js"></script>
+</body>
+</html>

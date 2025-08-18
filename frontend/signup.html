@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Your RUDASUMBWA Account</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="core.css">
+  <style>
+    body { background: linear-gradient(120deg, #e3f0ff 0%, #f8fbff 100%); font-family: 'Inter', Arial, sans-serif; margin: 0; }
+    .container { max-width: 420px; margin: 6rem auto 2rem auto; padding: 2rem; background: rgba(255,255,255,0.85); border-radius: 1.5rem; box-shadow: 0 2px 16px #17407622; }
+    h1 { font-family: 'Playfair Display', serif; color: #174076; font-size: 2rem; margin-bottom: 0.5rem; }
+    .subheading { color: #174076cc; font-size: 1rem; margin-bottom: 2rem; }
+    label { display: block; margin-bottom: 0.3rem; font-weight: 600; color: #174076; }
+    input, select { width: 100%; padding: 0.7rem; margin-bottom: 1.2rem; border-radius: 0.7rem; border: 1px solid #17407633; font-size: 1rem; background: #e3f0ff; }
+    .role-btns { display: flex; gap: 1rem; margin-bottom: 1.2rem; }
+    .role-btn { flex: 1; padding: 0.7rem; border-radius: 0.7rem; border: 2px solid #174076; background: #fff; color: #174076; font-weight: bold; cursor: pointer; transition: background 0.2s, color 0.2s; }
+    .role-btn.selected { background: #174076; color: #fff; }
+    .checkbox { margin-bottom: 1.2rem; }
+    .checkbox label { display: inline; font-weight: 400; }
+    .btn { width: 100%; padding: 1rem; border-radius: 0.7rem; border: none; background: linear-gradient(90deg, #4facfe, #00f2fe); color: #fff; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-bottom: 1rem; }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    .link-btn { background: none; border: none; color: #174076; text-decoration: underline; cursor: pointer; font-size: 1rem; margin-bottom: 1rem; }
+    .error, .info { color: #ff4c4c; background: #fff0f0; border-radius: 0.5rem; padding: 0.7rem; margin-bottom: 1rem; text-align: center; font-size: 1rem; }
+    .info { color: #174076; background: #e3f0ff; }
+    .footer { text-align: center; color: #174076; margin-top: 2rem; font-size: 0.95rem; }
+    .footer a { color: #174076; text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Create Your RUDASUMBWA Account</h1>
+    <div class="subheading">Students and teachers must be approved by the Head of Studies before accessing the dashboard.</div>
+    <form id="signupForm">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="Enter your email" required>
+      <label for="class">Class</label>
+      <select id="class" name="class" required>
+        <option value="">Select your class</option>
+        <option value="Senior 1">Senior 1</option>
+        <option value="Senior 2">Senior 2</option>
+        <option value="Senior 3">Senior 3</option>
+        <option value="Senior 4">Senior 4</option>
+        <option value="Senior 5">Senior 5</option>
+        <option value="Senior 6">Senior 6</option>
+      </select>
+      <label for="district">District</label>
+      <input type="text" id="district" name="district" placeholder="Enter your district" required>
+      
+      <label for="parish">Parish</label>
+      <input type="text" id="parish" name="parish" placeholder="Enter your parish" required>
+      
+      <div id="teacherFields" style="display: none;">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
+        <label for="teacherClass">Class Taught</label>
+        <input type="text" id="teacherClass" name="teacherClass" placeholder="Enter the class you teach">
+      </div>
+      <div class="role-btns">
+        <button type="button" class="role-btn selected" id="studentBtn">Student</button>
+        <button type="button" class="role-btn" id="teacherBtn">Teacher</button>
+      </div>
+      <input type="hidden" id="role" name="role" value="student">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Create a password" required>
+      <label for="confirmPassword">Confirm Password</label>
+      <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+      <div class="checkbox">
+        <input type="checkbox" id="terms" name="terms" required>
+        <label for="terms">I agree to the Terms and Conditions of RUDASUMBWA</label>
+      </div>
+      <button type="submit" class="btn">Sign Up</button>
+      <button type="button" class="link-btn" onclick="location.href='login.html'">Login Instead</button>
+      <div id="message" class="error" style="display:none;"></div>
+      <div id="infoMessage" class="info" style="display:none;"></div>
+    </form>
+  </div>
+  <div class="footer">
+    &copy; 2025 RUDASUMBWA | Contact: info@rudasumbwa.rw
+  </div>
+  <script>
+    // Role selection logic
+    const studentBtn = document.getElementById('studentBtn');
+    const teacherBtn = document.getElementById('teacherBtn');
+    const roleInput = document.getElementById('role');
+    const teacherFields = document.getElementById('teacherFields');
+    const studentFields = document.querySelectorAll('#class, #district, #parish');
+
+    studentBtn.onclick = function() {
+      studentBtn.classList.add('selected');
+      teacherBtn.classList.remove('selected');
+      roleInput.value = 'student';
+      teacherFields.style.display = 'none';
+      document.getElementById('phone').removeAttribute('required');
+      document.getElementById('teacherClass').removeAttribute('required');
+      studentFields.forEach(field => field.parentElement.style.display = 'block');
+    };
+    teacherBtn.onclick = function() {
+      teacherBtn.classList.add('selected');
+      studentBtn.classList.remove('selected');
+      roleInput.value = 'teacher';
+      teacherFields.style.display = 'block';
+      document.getElementById('phone').setAttribute('required', 'required');
+      document.getElementById('teacherClass').setAttribute('required', 'required');
+      studentFields.forEach(field => field.parentElement.style.display = 'none');
+    };
+    // Form validation and submission
+    document.getElementById('signupForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const role = document.getElementById('role').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const terms = document.getElementById('terms').checked;
+      const message = document.getElementById('message');
+      const infoMessage = document.getElementById('infoMessage');
+      
+      message.style.display = 'none';
+      infoMessage.style.display = 'none';
+
+      const submissionData = {
+        name, 
+        email, 
+        role, 
+        password
+      };
+
+      if (role === 'student') {
+        submissionData.className = document.getElementById('class').value;
+        submissionData.district = document.getElementById('district').value.trim();
+        submissionData.parish = document.getElementById('parish').value.trim();
+        if (!submissionData.className || !submissionData.district || !submissionData.parish) {
+          message.textContent = 'All fields are required for students';
+          message.style.display = 'block';
+          return;
+        }
+      }
+
+      if (role === 'teacher') {
+        submissionData.phone = document.getElementById('phone').value.trim();
+        submissionData.teacherClass = document.getElementById('teacherClass').value.trim();
+        if (!submissionData.phone || !submissionData.teacherClass) {
+          message.textContent = 'All fields are required for teachers';
+          message.style.display = 'block';
+          return;
+        }
+      }
+      
+      if (password !== confirmPassword) {
+        message.textContent = 'Passwords do not match';
+        message.style.display = 'block';
+        return;
+      }
+      
+      // Submit to backend
+      try {
+        const res = await fetch('/api/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(submissionData)
+        });
+        const text = await res.text();
+        if (res.status === 200) {
+          infoMessage.textContent = 'Your account is pending approval by the Head of Studies';
+          infoMessage.style.display = 'block';
+          document.getElementById('signupForm').reset();
+        } else {
+          message.textContent = text;
+          message.style.display = 'block';
+        }
+      } catch (err) {
+        message.textContent = 'Error submitting form';
+        message.style.display = 'block';
+      }
+    };
+  </script>
+</body>
+</html>

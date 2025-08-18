@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RUDASUMBWA – Petit Séminaire Saint Léon Kabgayi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(120deg, #e3f0ff 0%, #f8fbff 100%);
+      color: #222;
+      font-family: 'Inter', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      animation: fadeIn 1.2s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .navbar {
+      background: #174076;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 3vw;
+      position: fixed;
+      width: 100vw;
+      z-index: 20;
+      box-shadow: 0 2px 16px #17407633;
+    }
+    .navbar .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-size: 2rem;
+      font-weight: bold;
+      font-family: 'Playfair Display', serif;
+      letter-spacing: 2px;
+    }
+    .navbar .logo img {
+      height: 2.5rem;
+      width: 2.5rem;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px #17407699;
+    }
+    .navbar .nav-links {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .navbar .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.05rem;
+      padding: 0.5rem 1.2rem;
+      border-radius: 0.5rem;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+    .navbar .nav-links a:hover {
+      background: #fff;
+      color: #174076;
+      box-shadow: 0 2px 8px #17407633;
+      text-decoration: underline;
+    }
+    .navbar .nav-links .nav-btn {
+      background: #fff;
+      color: #174076;
+      font-weight: bold;
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.5rem 1.5rem;
+      font-size: 1.05rem;
+      cursor: pointer;
+      margin-left: 0.5rem;
+      transition: background 0.2s, color 0.2s, transform 0.2s;
+    }
+    .navbar .nav-links .nav-btn:hover {
+      background: #174076;
+      color: #fff;
+      transform: scale(1.05);
+    }
+    .hero {
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: linear-gradient(120deg, #e3f0ff 0%, #f8fbff 100%);
+      position: relative;
+      padding-top: 7rem;
+      padding-bottom: 3rem;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      object-fit: cover;
+      filter: brightness(0.85) blur(3px);
+      z-index: 0;
+      transition: opacity 0.5s;
+      border-radius: 0 0 2rem 2rem;
+      box-shadow: 0 8px 32px #17407633;
+      background: #000;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      background: none;
+      box-shadow: none;
+      border-radius: 0;
+      animation: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 40vh;
+    }
+    .hero-heading {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.3rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 0;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 16px #17407699;
+      background: none;
+      padding: 0.5rem 1rem;
+      border-radius: 1rem;
+    }
+    .hero-btns {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+    .hero-btn {
+      background: #174076;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      border-radius: 0.75rem;
+      padding: 1rem 2.5rem;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #17407633;
+      transition: background 0.2s, color 0.2s, transform 0.2s;
+    }
+    .hero-btn.hero-btn-secondary {
+      background: #fff;
+      color: #174076;
+      border: 2px solid #174076;
+    }
+    .hero-btn:hover {
+      background: #0ea5e9;
+      color: #fff;
+      transform: scale(1.05);
+    }
+    .scroll-indicator {
+      color: #fff;
+      font-size: 2rem;
+      position: relative;
+      z-index: 2;
+      margin-top: 2rem;
+      text-shadow: 0 2px 8px #17407699;
+    }
+    .sections {
+      margin: 0 auto;
+      max-width: 1200px;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+    }
+    .section {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 2px 16px #17407622;
+      padding: 2rem 1.5rem;
+      animation: fadeIn 1.2s;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      color: #174076;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+    .features-cards {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    .feature-card {
+      background: #e3f0ff;
+      border-radius: 1rem;
+      box-shadow: 0 2px 8px #17407622;
+      padding: 1.2rem 2rem;
+      text-align: center;
+      font-size: 1.1rem;
+      color: #174076;
+      font-weight: 600;
+      cursor: pointer;
+      transition: box-shadow 0.2s, transform 0.2s;
+      max-width: 260px;
+      min-width: 220px;
+    }
+    .feature-card:hover {
+      box-shadow: 0 4px 16px #0ea5e9;
+      transform: translateY(-4px) scale(1.04);
+    }
+    .cta-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 4rem auto 0 auto;
+      max-width: 600px;
+      background: #e3f0ff;
+      border-radius: 2rem;
+      box-shadow: 0 2px 16px #17407622;
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      animation: fadeIn 1.2s;
+    }
+    .cta-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      color: #174076;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+    .cta-note {
+      font-size: 1rem;
+      color: #174076cc;
+      margin-bottom: 2rem;
+      opacity: 0.8;
+    }
+    .cta-btns {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .cta-btn {
+      background: #174076;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      border-radius: 0.75rem;
+      padding: 1rem 2.5rem;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #17407633;
+      transition: background 0.2s, color 0.2s, transform 0.2s;
+    }
+    .cta-btn.cta-btn-secondary {
+      background: #fff;
+      color: #174076;
+      border: 2px solid #174076;
+    }
+    .cta-btn:hover {
+      background: #0ea5e9;
+      color: #fff;
+      transform: scale(1.05);
+      box-shadow: 0 4px 16px #0ea5e9;
+    }
+    .footer {
+      background: #174076;
+      color: #fff;
+      padding: 2rem 0;
+      margin-top: 3rem;
+      text-align: center;
+      font-size: 1rem;
+      box-shadow: 0 -2px 16px #17407633;
+    }
+    .footer .footer-links {
+      margin-top: 1rem;
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      font-size: 0.95rem;
+    }
+    .footer .footer-links a {
+      color: #fff;
+      text-decoration: none;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+    .footer .footer-links a:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .footer .footer-social {
+      margin-top: 1rem;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+    .footer .footer-social img {
+      width: 28px;
+      height: 28px;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+    .footer .footer-social img:hover {
+      opacity: 1;
+    }
+    @media (max-width: 700px) {
+      .navbar { 
+        flex-direction: column; 
+        padding: 1rem 2vw; 
+      }
+      .navbar .logo {
+        font-size: 1.5rem; /* Smaller logo text */
+      }
+      .nav-links { 
+        gap: 0.5rem; /* Reduced gap */
+        flex-wrap: wrap; /* Allow wrapping */
+        justify-content: center; /* Center links */
+        margin-top: 1rem;
+      }
+      .navbar .nav-links a, .navbar .nav-links .nav-btn {
+        font-size: 0.9rem; /* Smaller nav links */
+        padding: 0.5rem 1rem; /* Smaller padding */
+      }
+      .hero-heading { 
+        font-size: 1.8rem; /* Adjusted heading font size */
+        padding: 0 1rem;
+      }
+      .hero-content { 
+        padding: 0 1rem; 
+      }
+      .hero-btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+      }
+      .sections { 
+        padding: 1rem 1rem; /* Increased padding */
+      }
+      .section-title {
+        font-size: 1.6rem; /* Adjusted section title */
+      }
+      .features-cards { 
+        flex-direction: column; 
+        gap: 1rem; 
+      }
+      .feature-card { 
+        min-width: unset; 
+        max-width: unset; 
+        width: 100%; 
+        font-size: 1rem;
+      }
+      .cta-section { 
+        padding: 2rem 1rem; /* Increased padding */
+      }
+      .cta-title {
+        font-size: 1.6rem; /* Adjusted CTA title */
+      }
+      .cta-note {
+        font-size: 0.9rem;
+      }
+      .cta-btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+      }
+      .footer {
+        font-size: 0.9rem;
+      }
+      .footer .footer-links {
+        gap: 1rem;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="images/logo.PNG" alt="School Logo" />
+      RUDASUMBWA
+    </div>
+    <div class="nav-links">
+      <a href="#hero">Home</a>
+      <a href="#features">Features</a>
+      <a href="#clubs">Clubs</a>
+      <a href="#gospel">Gospel</a>
+      <a href="#events">Events</a>
+      <a href="#contact">Contact</a>
+      <button class="nav-btn" onclick="location.href='signup.html'">Sign Up</button>
+      <button class="nav-btn" onclick="location.href='login.html'">Login</button>
+    </div>
+  </nav>
+  <section class="hero" id="hero">
+    <video id="heroVideo" class="hero-bg" autoplay muted loop playsinline poster="images/hero-bg.jpg"></video>
+    <div class="hero-content">
+      <h1 class="hero-heading">Welcome to RUDASUMBWA - Paravi Lucernam Christo Meo</h1>
+      <div class="hero-btns">
+        <button class="hero-btn" onclick="location.href='signup.html'">Sign Up</button>
+        <button class="hero-btn hero-btn-secondary" onclick="location.href='login.html'">Login</button>
+      </div>
+    </div>
+    <div class="scroll-indicator">&#8595;</div>
+  </section>
+  <div class="sections">
+    <section class="section" id="features">
+      <div class="section-title">Features / Highlights</div>
+      <div class="features-cards">
+        <div class="feature-card">
+          <div>Quizzes & Learning</div>
+          <div style="font-size:0.95rem;opacity:0.8;">Interactive quizzes, auto-graded questions, and LECTIONES for students.</div>
+        </div>
+        <div class="feature-card">
+          <div>Clubs</div>
+          <div style="font-size:0.95rem;opacity:0.8;">Join clubs, interact with peers, and upload portfolios or projects.</div>
+        </div>
+        <div class="feature-card">
+          <div>Leaderboard & Analytics</div>
+          <div style="font-size:0.95rem;opacity:0.8;">Track your performance and see how you rank among classmates.</div>
+        </div>
+        <div class="feature-card">
+          <div>Spiritual Events & Gospel</div>
+          <div style="font-size:0.95rem;opacity:0.8;">Participate in upcoming events and follow the daily Gospel.</div>
+        </div>
+      </div>
+    </section>
+    <section class="cta-section" id="cta">
+      <div class="cta-title">Join RUDASUMBWA Today!</div>
+      <div class="cta-note">Students and teachers need approval from the Head of Studies to access the dashboard.</div>
+      <div class="cta-btns">
+        <button class="cta-btn" onclick="location.href='signup.html'">Sign Up</button>
+        <button class="cta-btn cta-btn-secondary" onclick="location.href='login.html'">Login</button>
+      </div>
+    </section>
+  </div>
+  <footer class="footer" id="contact">
+    <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:bold;">Petit Séminaire Saint Léon Kabgayi / RUDASUMBWA</div>
+    <div style="margin-top:0.5rem;">Email: info@rudasumbwa.rw | Phone: 0790 696 93 | Address: Petit Séminaire Saint Léon Kabgayi</div>
+    <div class="footer-links">
+      <a href="#hero">Home</a>
+      <a href="#features">Features</a>
+      <a href="#clubs">Clubs</a>
+      <a href="#gospel">Gospel</a>
+      <a href="#events">Events</a>
+      <a href="login.html">Login</a>
+      <a href="signup.html">Sign Up</a>
+    </div>
+    <div class="footer-social">
+      <a href="#"><img src="images/instagram.png" alt="Instagram" /></a>
+      <a href="https://www.youtube.com/channel/UCSIsez6DQZR3XaxsPABEE-Q" target="_blank"><img src="images/youtube.png" alt="YouTube" /></a>
+      <a href="#"><img src="images/facebook.png" alt="Facebook" /></a>
+    </div>
+    <div style="margin-top:1rem;font-size:0.95rem;">&copy; 2025 Petit Séminaire Saint Léon Kabgayi. All rights reserved.</div>
+  </footer>
+  <script>
+    // Hero video carousel
+    const videoFiles = [
+      'images/0.mp4',
+      'images/1.mp4',
+      'images/2.mp4',
+      'images/3.mp4',
+      'images/4.mp4'
+    ];
+    let currentVideo = 0;
+    const heroVideo = document.getElementById('heroVideo');
+    function playNextVideo() {
+      heroVideo.src = videoFiles[currentVideo];
+      heroVideo.load();
+      const playPromise = heroVideo.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Try to play again if autoplay fails
+          setTimeout(() => heroVideo.play(), 200);
+        });
+      }
+      currentVideo = (currentVideo + 1) % videoFiles.length;
+    }
+    heroVideo.addEventListener('ended', playNextVideo);
+    // Start with first video
+    playNextVideo();
+    // Try to force autoplay on mobile after user gesture
+    document.body.addEventListener('touchstart', () => {
+      heroVideo.play();
+    }, { once: true });
+  </script>
+  <script src="js/redirect.js"></script>
+</body>
+</html>
