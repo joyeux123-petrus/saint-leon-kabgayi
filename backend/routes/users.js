@@ -3,15 +3,12 @@ const router = express.Router();
 const usersController = require('../controllers/usersController');
 const auth = require('../middleware/auth');
 
-// User management routes - fixed routes first
-router.get('/', auth, usersController.getAllUsers);
-router.get('/profile', auth, usersController.getProfile);
-router.post('/change-password', auth, usersController.changePassword);
-
-// Dynamic routes last
-router.get('/:id', auth, usersController.getUserById);
-router.put('/profile', auth, usersController.updateProfile);
-router.put('/:id', auth, usersController.updateUser);
-router.delete('/:id', auth, usersController.deleteUser);
+// User management routes
+router.get('/', auth.verifyToken, usersController.listUsers);
+router.get('/profile', auth.verifyToken, usersController.profile);
+router.get('/:userId', auth.verifyToken, usersController.getUserById);
+router.get('/pending', auth.verifyToken, auth.requireRole('admin'), usersController.getPendingUsers);
+router.put('/approve/:userId', auth.verifyToken, auth.requireRole('admin'), usersController.approveUser);
+router.delete('/reject/:userId', auth.verifyToken, auth.requireRole('admin'), usersController.rejectUser);
 
 module.exports = router;

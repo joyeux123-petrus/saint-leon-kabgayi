@@ -1,11 +1,45 @@
 
 
-exports.listSubjects = async (req, res) => {
+exports.getAllSubjects = async (req, res) => {
   try {
     const [subjects] = await db.query('SELECT * FROM subjects ORDER BY name');
     res.json({ subjects });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch subjects.' });
+  }
+};
+
+exports.getSubjectById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [rows] = await db.query('SELECT * FROM subjects WHERE id = ?', [id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Subject not found.' });
+    }
+    res.json({ subject: rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch subject.' });
+  }
+};
+
+exports.updateSubject = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, classId } = req.body;
+    await db.query('UPDATE subjects SET name=?, class_id=? WHERE id=?', [name, classId, id]);
+    res.json({ message: 'Subject updated successfully.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update subject.' });
+  }
+};
+
+exports.deleteSubject = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await db.query('DELETE FROM subjects WHERE id = ?', [id]);
+    res.json({ message: 'Subject deleted successfully.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete subject.' });
   }
 };
 

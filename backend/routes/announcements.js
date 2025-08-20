@@ -5,11 +5,11 @@ const auth = require('../middleware/auth');
 
 // Announcement routes - fixed routes first
 router.get('/', announcementsController.getAllAnnouncements);
-router.post('/', auth, announcementsController.createAnnouncement);
+router.post('/', auth.verifyToken, announcementsController.createAnnouncement);
 
 // Dynamic routes last
 router.get('/:id', announcementsController.getAnnouncementById);
-router.put('/:id', auth, announcementsController.updateAnnouncement);
-router.delete('/:id', auth, announcementsController.deleteAnnouncement);
+router.put('/:id', auth.verifyToken, announcementsController.updateAnnouncement);
+router.delete('/:id', auth.verifyToken, announcementsController.deleteAnnouncement);
 
 module.exports = router;

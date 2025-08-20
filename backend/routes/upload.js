@@ -5,8 +5,8 @@ const auth = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
 // Upload routes
-router.post('/image', auth, upload.single('image'), uploadController.uploadImage);
-router.post('/document', auth, upload.single('document'), uploadController.uploadDocument);
-router.delete('/:filename', auth, uploadController.deleteFile);
+router.post('/image', auth.verifyToken, upload.single('image'), uploadController.uploadImage);
+router.post('/document', auth.verifyToken, upload.single('document'), uploadController.uploadDocument);
+router.delete('/:filename', auth.verifyToken, uploadController.deleteFile);
 
 module.exports = router;

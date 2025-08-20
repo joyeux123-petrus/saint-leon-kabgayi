@@ -170,6 +170,14 @@
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 24px;
       margin-bottom: 32px;
+      margin-left: 40px;
+      margin-right: 16px;
+    }
+    @media (max-width: 900px) {
+      .stats-grid {
+        margin-left: 0;
+        margin-right: 0;
+      }
     }
     .stat-card {
       background: var(--navy);
@@ -262,11 +270,26 @@
       nav[aria-label="Sidebar"] { left: -260px; }
       .sidebar-toggle { display: flex; }
       main { margin-left: 0; }
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+      section {
+        margin-left: 0;
+      }
     }
     @media (max-width: 600px) {
-      main { padding: 12px; }
-      header[aria-label="Topbar"] { padding: 12px; }
-      section { padding: 12px; }
+      main { padding: 8px; }
+      header[aria-label="Topbar"] { padding: 8px; }
+      section { padding: 8px; }
+      .table th, .table td { padding: 8px 4px; font-size: 0.95rem; }
+      .stats-grid { gap: 10px; }
+    }
+    /* Extra: push dashboard content right for desktop */
+    @media (min-width: 900px) {
+      #dashboard-section, #dashboard-section section {
+        margin-left: 24px;
+      }
     }
     footer {
       text-align: center;

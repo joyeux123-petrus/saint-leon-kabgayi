@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 
 // List notes (for students, only published notes, with optional class filter)
-exports.listNotes = async (req, res) => {
+exports.getAllNotes = async (req, res) => {
   try {
     const { classId } = req.query;
     let sql = 'SELECT id, title, class_id, attachments FROM notes WHERE published = 1';
@@ -30,6 +30,50 @@ exports.listNotes = async (req, res) => {
   } catch (err) {
     console.error('Error fetching notes:', err);
     res.status(500).json({ error: 'Failed to fetch notes.' });
+  }
+};
+
+exports.getNoteById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [rows] = await db.query('SELECT * FROM notes WHERE id = ?', [id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Note not found.' });
+    }
+    res.json({ note: rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch note.' });
+  }
+};
+
+exports.updateNote = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, content, tags, color } = req.body;
+    await db.query('UPDATE notes SET title=?, content=?, tags=?, color=? WHERE id=?', [title, content, tags, color, id]);
+    res.json({ message: 'Note updated successfully.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update note.' });
+  }
+};
+
+exports.deleteNote = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await db.query('DELETE FROM notes WHERE id = ?', [id]);
+    res.json({ message: 'Note deleted successfully.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete note.' });
+  }
+};
+
+exports.getUserNotes = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const [notes] = await db.query('SELECT * FROM notes WHERE teacher_id = ?', [userId]);
+    res.json({ notes });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch user notes.' });
   }
 };
 

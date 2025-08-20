@@ -21,3 +21,32 @@ exports.getDashboardStats = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch dashboard stats.' });
   }
 };
+
+exports.getRecentActivity = async (req, res) => {
+  try {
+    // Example: fetch recent activity from database
+    const [activity] = await db.query('SELECT * FROM activity_log ORDER BY timestamp DESC LIMIT 10');
+    res.json({ activity });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch recent activity.' });
+  }
+};
+
+exports.getUpcomingEvents = async (req, res) => {
+  try {
+    const [events] = await db.query('SELECT * FROM events WHERE date > NOW() ORDER BY date ASC LIMIT 10');
+    res.json({ events });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch upcoming events.' });
+  }
+};
+
+exports.getPerformanceData = async (req, res) => {
+  try {
+    // Example: fetch performance data
+    const [performance] = await db.query('SELECT * FROM performance_metrics WHERE user_id = ?', [req.user.id]);
+    res.json({ performance });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch performance data.' });
+  }
+};

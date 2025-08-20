@@ -9,6 +9,59 @@ exports.listClubs = async (req, res) => {
   }
 };
 
+exports.getClubById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [club] = await db.query('SELECT c.id, c.name, c.description, u.name as leader FROM clubs c JOIN users u ON c.leader_id = u.id WHERE c.id = ?', [id]);
+    if (club.length === 0) {
+      return res.status(404).json({ message: 'Club not found.' });
+    }
+    res.json({ club: club[0] });
+  } catch (err) {
+    console.error('Error fetching club by ID:', err);
+    res.status(500).json({ error: 'Failed to fetch club.' });
+  }
+};
+
+exports.updateClub = async (req, res) => {
+  const { id } = req.params;
+  const { name, description, leader_id } = req.body;
+  try {
+    const [result] = await db.query('UPDATE clubs SET name = ?, description = ?, leader_id = ? WHERE id = ?', [name, description, leader_id, id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Club not found or no changes made.' });
+    }
+    res.json({ message: 'Club updated successfully.' });
+  } catch (err) {
+    console.error('Error updating club:', err);
+    res.status(500).json({ error: 'Failed to update club.' });
+  }
+};
+
+exports.joinClub = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id; // Assuming user ID is available from auth middleware
+  try {
+    await db.query('INSERT INTO user_clubs (user_id, club_id) VALUES (?, ?)', [userId, id]);
+    res.json({ message: 'Successfully joined club.' });
+  } catch (err) {
+    console.error('Error joining club:', err);
+    res.status(500).json({ error: 'Failed to join club.' });
+  }
+};
+
+exports.leaveClub = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id; // Assuming user ID is available from auth middleware
+  try {
+    await db.query('DELETE FROM user_clubs WHERE user_id = ? AND club_id = ?', [userId, id]);
+    res.json({ message: 'Successfully left club.' });
+  } catch (err) {
+    console.error('Error leaving club:', err);
+    res.status(500).json({ error: 'Failed to leave club.' });
+  }
+};
+
 exports.createClub = async (req, res) => {
     const { name, description, leader_id } = req.body;
     try {

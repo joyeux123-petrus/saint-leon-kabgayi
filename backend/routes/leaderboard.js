@@ -7,6 +7,6 @@ const auth = require('../middleware/auth');
 router.get('/', leaderboardController.getLeaderboard);
 router.get('/weekly', leaderboardController.getWeeklyLeaderboard);
 router.get('/monthly', leaderboardController.getMonthlyLeaderboard);
-router.get('/user/:userId', auth, leaderboardController.getUserRank);
+router.get('/user/:userId', auth.verifyToken, leaderboardController.getUserRank);
 
 module.exports = router;

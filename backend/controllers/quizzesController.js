@@ -105,20 +105,20 @@ exports.createQuiz = async (req, res) => {
 };
 
 exports.updateQuiz = async (req, res) => {
-    const { quizId } = req.params;
-    // ... update quiz logic ...
-    res.json({ message: `Quiz ${quizId} updated.` });
+  const { id } = req.params;
+  // ... update quiz logic ...
+  res.json({ message: `Quiz ${id} updated.` });
 };
 
 exports.deleteQuiz = async (req, res) => {
-    const { quizId } = req.params;
-    try {
-        await db.query('DELETE FROM quizzes WHERE id = ?', [quizId]);
-        res.json({ message: `Quiz ${quizId} deleted.` });
-    } catch (err) {
-        console.error('Error deleting quiz:', err);
-        res.status(500).json({ error: 'Failed to delete quiz.' });
-    }
+  const { id } = req.params;
+  try {
+    await db.query('DELETE FROM quizzes WHERE id = ?', [id]);
+    res.json({ message: `Quiz ${id} deleted.` });
+  } catch (err) {
+    console.error('Error deleting quiz:', err);
+    res.status(500).json({ error: 'Failed to delete quiz.' });
+  }
 };
 
 exports.submitQuiz = async (req, res) => {
