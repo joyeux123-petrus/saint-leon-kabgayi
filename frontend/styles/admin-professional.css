@@ -10,6 +10,7 @@
     --light-gray: #B0B0B0;
     --red-error: #E74C3C; /* For reject buttons or error states */
     --green-success: #2ECC71; /* For approve buttons or success states */
+    --sidebar-width-collapsed: 60px;
 
     /* General */
     --border-radius-card: 15px; /* Slightly larger for more elegance */
@@ -18,8 +19,8 @@
     --shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.3);
     --glass-blur: 15px; /* Increased blur for stronger effect */
     --transition-speed: 0.3s; /* Slightly slower for smoother animations */
-    --sidebar-width: 280px;
-    --sidebar-collapsed-width: 80px;
+    --sidebar-width: 250px;
+    --sidebar-collapsed-width: var(--sidebar-width-collapsed);
 }
 
 /* Base Styles */
@@ -56,6 +57,17 @@ body {
     display: flex;
     min-height: 100vh;
 }
+@media (max-width: 900px) {
+    .dashboard-container { flex-direction: column; }
+    .sidebar { position: fixed; left: -280px; top: 0; height: 100vh; z-index: 200; transition: left 0.3s; }
+    .sidebar.open { left: 0; }
+    .main-content { margin-left: 0; width: 100vw; }
+    .sidebar-toggle { display: block !important; }
+}
+@media (max-width: 600px) {
+    .dashboard-grid { grid-template-columns: 1fr !important; }
+    .stat-card { margin-bottom: 12px; }
+}
 
 /* Sidebar */
 .sidebar {
@@ -71,7 +83,7 @@ body {
 }
 
 .sidebar.collapsed {
-    width: var(--sidebar-collapsed-width);
+    width: var(--sidebar-width-collapsed);
 }
 
 .sidebar-header {
@@ -863,7 +875,7 @@ input:checked + .slider:before {
 
 @media (max-width: 768px) {
     .sidebar {
-        width: 250px; /* Full width for mobile sidebar when open */
+        width: var(--sidebar-width); /* Full width for mobile sidebar when open */
         position: fixed;
         height: 100%;
         transform: translateX(-100%);

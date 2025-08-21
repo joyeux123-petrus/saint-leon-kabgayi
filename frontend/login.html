@@ -33,6 +33,10 @@
       <input type="email" id="email" name="email" placeholder="Enter your email" required>
       <label for="password">Password</label>
       <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        <div id="captchaBox" style="margin-bottom:1rem;">
+          <span id="captchaQuestion" style="font-weight:bold;color:#174076;"></span>
+          <input type="text" id="captchaAnswer" name="captchaAnswer" placeholder="Enter answer" style="margin-top:0.5rem;" required>
+        </div>
       <div class="checkbox">
         <input type="checkbox" id="remember" name="remember">
         <label for="remember">Keep me logged in</label>
@@ -40,6 +44,7 @@
       <button type="submit" class="btn">Login</button>
       <button type="button" class="link-btn" onclick="location.href='signup.html'">Sign Up</button>
       <button type="button" class="link-btn" onclick="location.href='forgot-password.html'">Forgot Password?</button>
+      <button type="button" class="link-btn" id="resendVerificationBtn" style="display:none;">Resend Verification Email</button>
       <div id="message" class="error" style="display:none;"></div>
       <div id="infoMessage" class="info" style="display:none;"></div>
     </form>
@@ -48,45 +53,100 @@
     &copy; 2025 RUDASUMBWA | Contact: info@rudasumbwa.rw
   </div>
   <script>
-    document.getElementById('loginForm').onsubmit = async function(e) {
-      e.preventDefault();
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      const remember = document.getElementById('remember').checked;
-      const message = document.getElementById('message');
-      const infoMessage = document.getElementById('infoMessage');
-      message.style.display = 'none';
-      infoMessage.style.display = 'none';
-      if (!email || !password) {
-        message.textContent = 'All fields are required';
-        message.style.display = 'block';
-        return;
+      // Simple CAPTCHA logic
+      function generateCaptcha() {
+        const a = Math.floor(Math.random() * 10) + 1;
+        const b = Math.floor(Math.random() * 10) + 1;
+        document.getElementById('captchaQuestion').textContent = `What is ${a} + ${b}?`;
+        document.getElementById('captchaBox').dataset.answer = (a + b).toString();
       }
-      // Submit to backend
-      try {
-        const res = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password, remember })
-        });
-        const text = await res.text();
-        if (res.status === 200) {
-          window.location.href = '/dashboard.html';
-        } else if (text.includes('pending')) {
-          infoMessage.textContent = 'Your account is pending approval';
-          infoMessage.style.display = 'block';
-        } else if (text.includes('rejected')) {
-          message.textContent = 'Your account was not approved.';
+      generateCaptcha();
+
+      document.getElementById('loginForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const remember = document.getElementById('remember').checked;
+        const captchaInput = document.getElementById('captchaAnswer').value.trim();
+        const captchaCorrect = document.getElementById('captchaBox').dataset.answer;
+        const message = document.getElementById('message');
+        const infoMessage = document.getElementById('infoMessage');
+        const resendBtn = document.getElementById('resendVerificationBtn');
+
+        message.style.display = 'none';
+        infoMessage.style.display = 'none';
+        resendBtn.style.display = 'none';
+
+        if (!email || !password) {
+          message.textContent = 'All fields are required';
           message.style.display = 'block';
-        } else {
-          message.textContent = 'Incorrect email or password';
+          return;
+        }
+        if (captchaInput !== captchaCorrect) {
+          message.textContent = 'Incorrect CAPTCHA answer. Please try again.';
+          message.style.display = 'block';
+          generateCaptcha();
+          document.getElementById('captchaAnswer').value = '';
+          return;
+        }
+        // Submit to backend
+        try {
+          const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password, remember })
+          });
+          const data = await res.json();
+          if (res.status === 200 && data.token) {
+            // Store JWT token in localStorage
+            localStorage.setItem('token', data.token);
+            window.location.href = '/dashboard.html';
+          } else if (res.status === 403 && data.message.includes('unverified')) {
+            message.textContent = data.message;
+            message.style.display = 'block';
+            resendBtn.style.display = 'block';
+          } else if (data.message && data.message.includes('pending')) {
+            infoMessage.textContent = 'Your account is pending approval';
+            infoMessage.style.display = 'block';
+          } else if (data.message && data.message.includes('rejected')) {
+            message.textContent = 'Your account was not approved.';
+            message.style.display = 'block';
+          } else {
+            message.textContent = 'Incorrect email or password';
+            message.style.display = 'block';
+          }
+        } catch (err) {
+          message.textContent = 'Error logging in';
           message.style.display = 'block';
         }
-      } catch (err) {
-        message.textContent = 'Error logging in';
-        message.style.display = 'block';
-      }
-    };
+      };
+
+      document.getElementById('resendVerificationBtn').onclick = async function() {
+        const email = document.getElementById('email').value.trim();
+        if (!email) {
+          message.textContent = 'Please enter your email address first.';
+          message.style.display = 'block';
+          return;
+        }
+        try {
+          const res = await fetch('/api/resend-verification', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+          });
+          const text = await res.text();
+          if (res.status === 200) {
+            infoMessage.textContent = text;
+            infoMessage.style.display = 'block';
+          } else {
+            message.textContent = text;
+            message.style.display = 'block';
+          }
+        } catch (err) {
+          message.textContent = 'Error resending verification email';
+          message.style.display = 'block';
+        }
+      };
   </script>
 </body>
 </html>

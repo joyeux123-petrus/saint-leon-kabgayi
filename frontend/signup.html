@@ -31,42 +31,51 @@
   <div class="container">
     <h1>Create Your RUDASUMBWA Account</h1>
     <div class="subheading">Students and teachers must be approved by the Head of Studies before accessing the dashboard.</div>
+    <div class="role-btns">
+        <button type="button" class="role-btn selected" id="studentBtn">Student</button>
+        <button type="button" class="role-btn" id="teacherBtn">Teacher</button>
+    </div>
     <form id="signupForm">
       <label for="name">Full Name</label>
       <input type="text" id="name" name="name" placeholder="Enter your full name" required>
       <label for="email">Email</label>
       <input type="email" id="email" name="email" placeholder="Enter your email" required>
-      <label for="class">Class</label>
-      <select id="class" name="class" required>
-        <option value="">Select your class</option>
-        <option value="Senior 1">Senior 1</option>
-        <option value="Senior 2">Senior 2</option>
-        <option value="Senior 3">Senior 3</option>
-        <option value="Senior 4">Senior 4</option>
-        <option value="Senior 5">Senior 5</option>
-        <option value="Senior 6">Senior 6</option>
-      </select>
-      <label for="district">District</label>
-      <input type="text" id="district" name="district" placeholder="Enter your district" required>
-      
-      <label for="parish">Parish</label>
-      <input type="text" id="parish" name="parish" placeholder="Enter your parish" required>
-      
+      <div id="studentFields">
+        <label for="class">Class</label>
+        <select id="class" name="class" required>
+          <option value="">Select your class</option>
+          <option value="Senior 1">Senior 1</option>
+          <option value="Senior 2">Senior 2</option>
+          <option value="Senior 3">Senior 3</option>
+          <option value="Senior 4">Senior 4</option>
+          <option value="Senior 5">Senior 5</option>
+          <option value="Senior 6">Senior 6</option>
+        </select>
+        <label for="district">District</label>
+        <input type="text" id="district" name="district" placeholder="Enter your district" required>
+        <label for="parish">Parish</label>
+        <input type="text" id="parish" name="parish" placeholder="Enter your parish" required>
+      </div>
       <div id="teacherFields" style="display: none;">
         <label for="phone">Phone Number</label>
-        <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
-        <label for="teacherClass">Class Taught</label>
-        <input type="text" id="teacherClass" name="teacherClass" placeholder="Enter the class you teach">
-      </div>
-      <div class="role-btns">
-        <button type="button" class="role-btn selected" id="studentBtn">Student</button>
-        <button type="button" class="role-btn" id="teacherBtn">Teacher</button>
+        <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+        <label for="teacherClass">Class You Teach</label>
+        <input type="text" id="teacherClass" name="teacherClass" placeholder="Enter the class you teach" required>
+        <label for="districtTeacher">District</label>
+        <input type="text" id="districtTeacher" name="districtTeacher" placeholder="Enter your district" required>
+        <label for="parishTeacher">Parish</label>
+        <input type="text" id="parishTeacher" name="parishTeacher" placeholder="Enter your parish" required>
       </div>
       <input type="hidden" id="role" name="role" value="student">
       <label for="password">Password</label>
       <input type="password" id="password" name="password" placeholder="Create a password" required>
+      <div id="passwordStrength" style="margin-bottom:1rem; font-size:0.95rem; color:#174076; background:#e3f0ff; border-radius:0.5rem; padding:0.5rem; display:none;"></div>
       <label for="confirmPassword">Confirm Password</label>
       <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+      <div id="captchaBox" style="margin-bottom:1rem;">
+        <span id="captchaQuestion" style="font-weight:bold;color:#174076;"></span>
+        <input type="text" id="captchaAnswer" name="captchaAnswer" placeholder="Enter answer" style="margin-top:0.5rem;" required>
+      </div>
       <div class="checkbox">
         <input type="checkbox" id="terms" name="terms" required>
         <label for="terms">I agree to the Terms and Conditions of RUDASUMBWA</label>
@@ -85,26 +94,61 @@
     const studentBtn = document.getElementById('studentBtn');
     const teacherBtn = document.getElementById('teacherBtn');
     const roleInput = document.getElementById('role');
-    const teacherFields = document.getElementById('teacherFields');
-    const studentFields = document.querySelectorAll('#class, #district, #parish');
+  const teacherFields = document.getElementById('teacherFields');
+  const studentFields = document.getElementById('studentFields');
+
+      // Simple CAPTCHA logic
+      function generateCaptcha() {
+        const a = Math.floor(Math.random() * 10) + 1;
+        const b = Math.floor(Math.random() * 10) + 1;
+        document.getElementById('captchaQuestion').textContent = `What is ${a} + ${b}?`;
+        document.getElementById('captchaBox').dataset.answer = (a + b).toString();
+      }
+      generateCaptcha();
+
+      // Password strength indicator logic
+      const passwordInput = document.getElementById('password');
+      const passwordStrength = document.getElementById('passwordStrength');
+      passwordInput.addEventListener('input', function() {
+        const val = passwordInput.value;
+        let score = 0;
+        let feedback = [];
+        if (val.length >= 8) score++;
+        else feedback.push('At least 8 characters');
+        if (/[A-Z]/.test(val)) score++;
+        else feedback.push('An uppercase letter');
+        if (/[a-z]/.test(val)) score++;
+        else feedback.push('A lowercase letter');
+        if (/\d/.test(val)) score++;
+        else feedback.push('A number');
+        if (/[^A-Za-z0-9]/.test(val)) score++;
+        else feedback.push('A special character');
+        let strengthText = '';
+        if (val.length === 0) {
+          passwordStrength.style.display = 'none';
+        } else {
+          passwordStrength.style.display = 'block';
+          if (score <= 2) strengthText = 'Weak';
+          else if (score === 3) strengthText = 'Medium';
+          else if (score >= 4) strengthText = 'Strong';
+          passwordStrength.textContent = `Strength: ${strengthText}` + (feedback.length ? ' | Missing: ' + feedback.join(', ') : '');
+          passwordStrength.style.color = score >= 4 ? '#008000' : (score === 3 ? '#e6b800' : '#ff4c4c');
+        }
+      });
 
     studentBtn.onclick = function() {
       studentBtn.classList.add('selected');
       teacherBtn.classList.remove('selected');
       roleInput.value = 'student';
       teacherFields.style.display = 'none';
-      document.getElementById('phone').removeAttribute('required');
-      document.getElementById('teacherClass').removeAttribute('required');
-      studentFields.forEach(field => field.parentElement.style.display = 'block');
+      studentFields.style.display = 'block';
     };
     teacherBtn.onclick = function() {
       teacherBtn.classList.add('selected');
       studentBtn.classList.remove('selected');
       roleInput.value = 'teacher';
       teacherFields.style.display = 'block';
-      document.getElementById('phone').setAttribute('required', 'required');
-      document.getElementById('teacherClass').setAttribute('required', 'required');
-      studentFields.forEach(field => field.parentElement.style.display = 'none');
+      studentFields.style.display = 'none';
     };
     // Form validation and submission
     document.getElementById('signupForm').onsubmit = async function(e) {
@@ -117,9 +161,32 @@
       const terms = document.getElementById('terms').checked;
       const message = document.getElementById('message');
       const infoMessage = document.getElementById('infoMessage');
+        const captchaInput = document.getElementById('captchaAnswer').value.trim();
+        const captchaCorrect = document.getElementById('captchaBox').dataset.answer;
       
       message.style.display = 'none';
       infoMessage.style.display = 'none';
+
+        if (captchaInput !== captchaCorrect) {
+          message.textContent = 'Incorrect CAPTCHA answer. Please try again.';
+          message.style.display = 'block';
+          generateCaptcha();
+          document.getElementById('captchaAnswer').value = '';
+          return;
+        }
+
+        // Password strength check before submit
+        let score = 0;
+        if (password.length >= 8) score++;
+        if (/[A-Z]/.test(password)) score++;
+        if (/[a-z]/.test(password)) score++;
+        if (/\d/.test(password)) score++;
+        if (/[^A-Za-z0-9]/.test(password)) score++;
+        if (score < 4) {
+          message.textContent = 'Password is too weak. Please use at least 8 characters, including uppercase, lowercase, number, and special character.';
+          message.style.display = 'block';
+          return;
+        }
 
       const submissionData = {
         name, 
@@ -142,7 +209,9 @@
       if (role === 'teacher') {
         submissionData.phone = document.getElementById('phone').value.trim();
         submissionData.teacherClass = document.getElementById('teacherClass').value.trim();
-        if (!submissionData.phone || !submissionData.teacherClass) {
+        submissionData.district = document.getElementById('districtTeacher').value.trim();
+        submissionData.parish = document.getElementById('parishTeacher').value.trim();
+        if (!submissionData.phone || !submissionData.teacherClass || !submissionData.district || !submissionData.parish) {
           message.textContent = 'All fields are required for teachers';
           message.style.display = 'block';
           return;
@@ -157,14 +226,14 @@
       
       // Submit to backend
       try {
-        const res = await fetch('/api/signup', {
+        const res = await fetch('/api/auth/signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(submissionData)
         });
         const text = await res.text();
         if (res.status === 200) {
-          infoMessage.textContent = 'Your account is pending approval by the Head of Studies';
+          infoMessage.textContent = 'A verification link has been sent to your email. Please verify to continue.';
           infoMessage.style.display = 'block';
           document.getElementById('signupForm').reset();
         } else {

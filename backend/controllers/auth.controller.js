@@ -1,3 +1,4 @@
+// All controller logic moved from authController.js
 // Email Verification
 const verifyEmail = async (req, res) => {
   const { token } = req.query;
@@ -54,7 +55,7 @@ const forgotPassword = async (req, res) => {
   });
   res.status(200).send('If your email exists, a reset link has been sent.');
 };
-// RUDASUMBWA Auth Controller (Node.js + MySQL + Nodemailer)
+// ...existing code...
 require('dotenv').config();
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
@@ -164,6 +165,38 @@ function sendUserStatusEmail(user, status) {
   });
 }
 
+// Approve User
+const approve = async (req, res) => {
+  const { userId } = req.query;
+  try {
+    await db.promise().query('UPDATE users SET status=? WHERE id=?', ['approved', userId]);
+    const [rows] = await db.promise().query('SELECT * FROM users WHERE id=?', [userId]);
+    if (rows.length > 0) {
+      sendUserStatusEmail(rows[0], 'approved');
+    }
+    res.send('User approved successfully.');
+  } catch (err) {
+    console.error('Error approving user:', err);
+    res.status(500).send('Error approving user.');
+  }
+};
+
+// Reject User
+const reject = async (req, res) => {
+  const { userId } = req.query;
+  try {
+    await db.promise().query('UPDATE users SET status=? WHERE id=?', ['rejected', userId]);
+    const [rows] = await db.promise().query('SELECT * FROM users WHERE id=?', [userId]);
+    if (rows.length > 0) {
+      sendUserStatusEmail(rows[0], 'rejected');
+    }
+    res.send('User rejected successfully.');
+  } catch (err) {
+    console.error('Error rejecting user:', err);
+    res.status(500).send('Error rejecting user.');
+  }
+};
+
 // Sign Up
 const signup = async (req, res) => {
   const { name, email, role, password, className, parish, phone, teacherClass } = req.body;
@@ -180,47 +213,63 @@ const signup = async (req, res) => {
     return res.status(400).send('Phone number and class taught are required for teachers');
   }
 
-  const [existing] = await db.promise().query('SELECT * FROM users WHERE email=?', [email]);
-  if (existing.length > 0) return res.status(400).send('Email already exists');
+  try { // Added try-catch for existing email check
+    const [existing] = await db.promise().query('SELECT * FROM users WHERE email=?', [email]);
+    if (existing.length > 0) return res.status(400).send('Email already exists');
+  } catch (err) {
+    console.error('Error checking existing email:', err);
+    return res.status(500).send('Server error during signup.');
+  }
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
   let result;
-  if (role === 'student') {
-    [result] = await db.promise().query(
-      'INSERT INTO users (name,email,class,parish,role,password,status) VALUES (?,?,?,?,?,?,?)',
-      [name, email, className, parish, role, hashedPassword, 'unverified']
-    );
-  } else if (role === 'teacher') {
-    [result] = await db.promise().query(
-      'INSERT INTO users (name,email,phone,teacherClass,role,password,status) VALUES (?,?,?,?,?,?,?)',
-      [name, email, phone, teacherClass, role, hashedPassword, 'unverified']
-    );
+  try { // Added try-catch for user insertion
+    if (role === 'student') {
+      [result] = await db.promise().query(
+        'INSERT INTO users (name,email,class,parish,role,password,status) VALUES (?,?,?,?,?,?,?)',
+        [name, email, className, parish, role, hashedPassword, 'unverified']
+      );
+    } else if (role === 'teacher') {
+      [result] = await db.promise().query(
+        'INSERT INTO users (name,email,phone,teacherClass,role,password,status) VALUES (?,?,?,?,?,?,?)',
+        [name, email, phone, teacherClass, role, hashedPassword, 'unverified']
+      );
+    }
+  } catch (err) {
+    console.error('Error inserting new user:', err);
+    return res.status(500).send('Server error during signup.');
   }
 
   const user = { id: result.insertId, name, email, role, class: className, parish, phone, teacherClass };
   // Send email verification link
   const verifyToken = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '15m' });
   const verifyUrl = `http://localhost:3001/api/verify-email?token=${verifyToken}`;
-  await transporter.sendMail({
-    from: 'RUDASUMBWA <joyeuxpierreishimwe@gmail.com>',
-    to: user.email,
-    subject: 'Verify your RUDASUMBWA account',
-    html: `<div style="font-family: Arial, sans-serif; background-color: #1b1b1b; color: #ffffff; padding: 20px; max-width: 600px; margin: auto; border-radius: 10px;">
-      <h2 style="color: #00f2fe;">Verify Your Email</h2>
-      <p>Hello ${user.name},</p>
-      <p>Click the link below to verify your email. This link expires in 15 minutes.</p>
-      <a href="${verifyUrl}" style="display:inline-block;padding:12px 25px;background:linear-gradient(90deg,#4facfe,#00f2fe);color:#fff;text-decoration:none;border-radius:8px;font-weight:bold;margin-top:20px;">Verify Email</a>
-      <p>If you did not request this, please ignore this email.</p>
-    </div>`
-  });
+  try { // Added try-catch for email sending
+    await transporter.sendMail({
+      from: 'RUDASUMBWA <joyeuxpierreishimwe@gmail.com>',
+      to: user.email,
+      subject: 'Verify your RUDASUMBWA account',
+      html: `<div style="font-family: Arial, sans-serif; background-color: #1b1b1b; color: #ffffff; padding: 20px; max-width: 600px; margin: auto; border-radius: 10px;">
+        <h2 style="color: #00f2fe;">Verify Your Email</h2>
+        <p>Hello ${user.name},</p>
+        <p>Click the link below to verify your email. This link expires in 15 minutes.</p>
+        <a href="${verifyUrl}" style="display:inline-block;padding:12px 25px;background:linear-gradient(90deg,#4facfe,#00f2fe);color:#fff;text-decoration:none;border-radius:8px;font-weight:bold;margin-top:20px;">Verify Email</a>
+        <p>If you did not request this, please ignore this email.</p>
+      </div>`
+    });
+  } catch (err) {
+    console.error('Error sending verification email:', err);
+    // Decide whether to return an error to the user or proceed.
+    // For now, we'll send a generic server error.
+    return res.status(500).send('Server error during signup (email sending failed).');
+  }
+
   res.send('A verification link has been sent to your email. Please verify to continue.');
 };
 
 const logout = async (req, res) => {
   try {
-    // In a real application, you might invalidate a token here (e.g., add to a blacklist)
-    // For now, we'll just send a success message, assuming client-side token removal.
     res.json({ message: 'Logged out successfully.' });
   } catch (err) {
     console.error('Error during logout:', err);
@@ -254,7 +303,6 @@ const resendVerificationEmail = async (req, res) => {
   res.send('A new verification link has been sent to your email.');
 };
 
-// Login
 const login = async (req, res) => {
   const { email, password } = req.body;
   const [rows] = await db.promise().query('SELECT * FROM users WHERE email=?', [email]);
@@ -269,6 +317,7 @@ const login = async (req, res) => {
   const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
   res.json({ token, message: 'Login successful!' });
 };
+
 module.exports = {
   verifyEmail,
   resetPassword,
@@ -276,5 +325,7 @@ module.exports = {
   signup,
   logout,
   resendVerificationEmail,
-  login
+  login,
+  approve,
+  reject
 };
