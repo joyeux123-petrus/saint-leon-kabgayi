@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - RUDASUMBWA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="core.css">
+  <style>
+    body { background: linear-gradient(120deg, #e3f0ff 0%, #f8fbff 100%); font-family: 'Inter', Arial, sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 10vh; } /* Changed min-height to 10vh for better visibility during testing */
+    .container { max-width: 420px; padding: 2rem; background: rgba(255,255,255,0.85); border-radius: 1.5rem; box-shadow: 0 2px 16px #17407622; text-align: center; } /* Removed min-height from container */
+    h1 { font-family: 'Playfair Display', serif; color: #174076; font-size: 2rem; margin-bottom: 0.5rem; } 
+    .subheading { color: #174076cc; font-size: 1rem; margin-bottom: 2rem; } 
+    label { display: block; margin-bottom: 0.3rem; font-weight: 600; color: #174076; text-align: left; } 
+    input { width: 100%; padding: 0.7rem; margin-bottom: 1.2rem; border-radius: 0.7rem; border: 1px solid #17407633; font-size: 1rem; background: #e3f0ff; } 
+    .checkbox { margin-bottom: 1.2rem; text-align: left; }
+    .checkbox label { display: inline; font-weight: 400; }
+    .btn { width: 100%; padding: 1rem; border-radius: 0.7rem; border: none; background: linear-gradient(90deg, #4facfe, #00f2fe); color: #fff; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-bottom: 1rem; } 
+    .btn:disabled { background: #ccc; cursor: not-allowed; } 
+    .error, .info { color: #ff4c4c; background: #fff0f0; border-radius: 0.5rem; padding: 0.7rem; margin-bottom: 1rem; text-align: center; font-size: 1rem; } 
+    .info { color: #174076; background: #e3f0ff; } 
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Admin Login</h1>
+    <div class="subheading">Access the RUDASUMBWA Admin Dashboard</div>
+    <form id="adminLoginForm">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="Enter your admin email" required>
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Enter your password" required>
+      <div class="checkbox">
+        <input type="checkbox" id="showPassword">
+        <label for="showPassword">Show Password</label>
+      </div>
+      <button type="submit" class="btn">Login</button>
+      <div id="message" class="error" style="display:none;"></div>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('showPassword').onclick = function() {
+      var passwordInput = document.getElementById('password');
+      if (this.checked) {
+        passwordInput.type = 'text';
+      } else {
+        passwordInput.type = 'password';
+      }
+    };
+
+    document.getElementById('adminLoginForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const messageDiv = document.getElementById('message');
+
+      messageDiv.style.display = 'none';
+      messageDiv.textContent = '';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (res.status === 200) {
+          localStorage.setItem('token', data.token);
+          window.location.href = '/admin.html';
+        } else {
+          messageDiv.textContent = data.error || data.message || 'Login failed.';
+          messageDiv.style.display = 'block';
+        }
+      } catch (err) {
+        console.error('Error during login:', err);
+        messageDiv.textContent = 'An error occurred during login. Please try again.';
+        messageDiv.style.display = 'block';
+      }
+    };
+  </script>
+</body>
+</html>

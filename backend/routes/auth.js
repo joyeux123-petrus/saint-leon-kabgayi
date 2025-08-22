@@ -10,8 +10,10 @@ router.post('/signup', authController.signup);
 router.post('/login', rateLimit, authController.login);
 router.post('/forgot-password', authController.forgotPassword);
 router.post('/reset-password', authController.resetPassword);
-router.get('/approve', authController.approve);
-router.get('/reject', authController.reject);
+router.put('/users/approve/:userId', authController.approve);
+router.delete('/users/reject/:userId', authController.reject);
+router.get('/users/pending', authController.getPendingUsers);
+router.get('/dashboard/stats', authController.getDashboardStats);
 router.post('/logout', authController.logout);
 router.post('/resend-verification', authController.resendVerificationEmail);
 

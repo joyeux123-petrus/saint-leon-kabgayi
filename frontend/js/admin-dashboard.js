@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.querySelector('.sidebar');
     const sidebarToggle = document.querySelector('.sidebar-toggle');
@@ -51,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (targetId === 'user-management') {
                 fetchPendingUsers();
+                fetchAllUsers();
             }
             if (targetId === 'quiz-learning') {
                 fetchAdminQuizzes();
@@ -296,20 +296,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchPendingUsers() {
         try {
-            const response = await fetch('/api/users/pending');
+            const response = await fetch('/api/auth/users/pending');
             if (!response.ok) {
                 throw new Error('Failed to fetch pending users');
             }
             const users = await response.json();
-            const tbody = document.querySelector('#user-management .table tbody');
+            const tbody = document.getElementById('pending-users-table-body');
             tbody.innerHTML = ''; // Clear existing rows
             users.forEach(user => {
                 const row = document.createElement('tr');
+                let details = '';
+                if (user.role === 'student') {
+                    details = `Class: ${user.class || 'N/A'}<br>Parish: ${user.parish || 'N/A'}`;
+                } else if (user.role === 'teacher') {
+                    details = `Phone: ${user.phone || 'N/A'}<br>Teaches: ${user.teacherClass || 'N/A'}`;
+                }
+
                 row.innerHTML = `
                     <td>${user.name}</td>
-                    <td>${user.class || 'N/A'}</td>
-                    <td>${user.district || 'N/A'}</td>
-                    <td>${user.parish || 'N/A'}</td>
+                    <td>${user.email}</td>
+                    <td>${user.role}</td>
+                    <td>${details}</td>
                     <td>
                         <button class="action-btn approve" data-user-id="${user.id}">Approve</button>
                         <button class="action-btn reject" data-user-id="${user.id}">Reject</button>
@@ -319,14 +326,14 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             // Add event listeners to the new buttons
-            document.querySelectorAll('.approve').forEach(button => {
+            document.querySelectorAll('#user-management .approve').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const userId = e.target.dataset.userId;
                     approveUser(userId);
                 });
             });
 
-            document.querySelectorAll('.reject').forEach(button => {
+            document.querySelectorAll('#user-management .reject').forEach(button => {
                 button.addEventListener('click', (e) => {
                     const userId = e.target.dataset.userId;
                     rejectUser(userId);
@@ -338,13 +345,39 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    async function fetchAllUsers() {
+        try {
+            const response = await fetch('/api/users');
+            if (!response.ok) {
+                throw new Error('Failed to fetch all users');
+            }
+            const { users } = await response.json();
+            const tbody = document.getElementById('all-users-table-body');
+            tbody.innerHTML = ''; // Clear existing rows
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.role}</td>
+                    <td><span class="status-badge status-${user.status}">${user.status}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Error fetching all users:', error);
+        }
+    }
+
     async function approveUser(userId) {
         try {
-            const response = await fetch(`/api/users/approve/${userId}`, { method: 'PUT' });
+            const response = await fetch(`/api/auth/users/approve/${userId}`, { method: 'PUT' });
             if (!response.ok) {
                 throw new Error('Failed to approve user');
             }
             fetchPendingUsers(); // Refresh the list
+            fetchAllUsers(); // Refresh the list
         } catch (error) {
             console.error('Error approving user:', error);
         }
@@ -352,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function rejectUser(userId) {
         try {
-            const response = await fetch(`/api/users/reject/${userId}`, { method: 'DELETE' });
+            const response = await fetch(`/api/auth/users/reject/${userId}`, { method: 'DELETE' });
             if (!response.ok) {
                 throw new Error('Failed to reject user');
             }
@@ -362,14 +395,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Initially load pending users if the user management section is active
+    // Initially load users if the user management section is active
     if (document.querySelector('#user-management.active')) {
         fetchPendingUsers();
+        fetchAllUsers();
     }
 
     async function fetchDashboardStats() {
         try {
-            const response = await fetch('/api/dashboard/stats');
+            const response = await fetch('/api/auth/dashboard/stats');
             if (!response.ok) {
                 throw new Error('Failed to fetch dashboard stats');
             }

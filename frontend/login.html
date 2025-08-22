@@ -33,6 +33,10 @@
       <input type="email" id="email" name="email" placeholder="Enter your email" required>
       <label for="password">Password</label>
       <input type="password" id="password" name="password" placeholder="Enter your password" required>
+      <div class="checkbox">
+        <input type="checkbox" id="showPassword">
+        <label for="showPassword">Show Password</label>
+      </div>
         <div id="captchaBox" style="margin-bottom:1rem;">
           <span id="captchaQuestion" style="font-weight:bold;color:#174076;"></span>
           <input type="text" id="captchaAnswer" name="captchaAnswer" placeholder="Enter answer" style="margin-top:0.5rem;" required>
@@ -61,6 +65,15 @@
         document.getElementById('captchaBox').dataset.answer = (a + b).toString();
       }
       generateCaptcha();
+
+      document.getElementById('showPassword').onclick = function() {
+        var passwordInput = document.getElementById('password');
+        if (this.checked) {
+          passwordInput.type = 'text';
+        } else {
+          passwordInput.type = 'password';
+        }
+      };
 
       document.getElementById('loginForm').onsubmit = async function(e) {
         e.preventDefault();

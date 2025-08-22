@@ -146,23 +146,34 @@
                                 <thead>
                                     <tr>
                                         <th>Name</th>
-                                        <th>Class</th>
-                                        <th>District</th>
-                                        <th>Parish</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Details</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="pending-users-table-body">
+                                    <!-- User rows will be inserted here by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>All Users</h3>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
                                     <tr>
-                                        <td>Jane Doe</td>
-                                        <td>Senior 1</td>
-                                        <td>Gasabo</td>
-                                        <td>Remera</td>
-                                        <td>
-                                            <button class="action-btn approve">Approve</button>
-                                            <button class="action-btn reject">Reject</button>
-                                        </td>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
                                     </tr>
+                                </thead>
+                                <tbody id="all-users-table-body">
+                                    <!-- User rows will be inserted here by JavaScript -->
                                 </tbody>
                             </table>
                         </div>

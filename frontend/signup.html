@@ -58,13 +58,13 @@
       </div>
       <div id="teacherFields" style="display: none;">
         <label for="phone">Phone Number</label>
-        <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+        <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
         <label for="teacherClass">Class You Teach</label>
-        <input type="text" id="teacherClass" name="teacherClass" placeholder="Enter the class you teach" required>
+        <input type="text" id="teacherClass" name="teacherClass" placeholder="Enter the class you teach">
         <label for="districtTeacher">District</label>
-        <input type="text" id="districtTeacher" name="districtTeacher" placeholder="Enter your district" required>
+        <input type="text" id="districtTeacher" name="districtTeacher" placeholder="Enter your district">
         <label for="parishTeacher">Parish</label>
-        <input type="text" id="parishTeacher" name="parishTeacher" placeholder="Enter your parish" required>
+        <input type="text" id="parishTeacher" name="parishTeacher" placeholder="Enter your parish">
       </div>
       <input type="hidden" id="role" name="role" value="student">
       <label for="password">Password</label>
@@ -142,6 +142,15 @@
       roleInput.value = 'student';
       teacherFields.style.display = 'none';
       studentFields.style.display = 'block';
+      // Remove required from teacher fields
+      document.getElementById('phone').removeAttribute('required');
+      document.getElementById('teacherClass').removeAttribute('required');
+      document.getElementById('districtTeacher').removeAttribute('required');
+      document.getElementById('parishTeacher').removeAttribute('required');
+      // Add required to student fields
+      document.getElementById('class').setAttribute('required', 'required');
+      document.getElementById('district').setAttribute('required', 'required');
+      document.getElementById('parish').setAttribute('required', 'required');
     };
     teacherBtn.onclick = function() {
       teacherBtn.classList.add('selected');
@@ -149,6 +158,15 @@
       roleInput.value = 'teacher';
       teacherFields.style.display = 'block';
       studentFields.style.display = 'none';
+      // Add required to teacher fields
+      document.getElementById('phone').setAttribute('required', 'required');
+      document.getElementById('teacherClass').setAttribute('required', 'required');
+      document.getElementById('districtTeacher').setAttribute('required', 'required');
+      document.getElementById('parishTeacher').setAttribute('required', 'required');
+      // Remove required from student fields
+      document.getElementById('class').removeAttribute('required');
+      document.getElementById('district').removeAttribute('required');
+      document.getElementById('parish').removeAttribute('required');
     };
     // Form validation and submission
     document.getElementById('signupForm').onsubmit = async function(e) {
@@ -233,7 +251,7 @@
         });
         const text = await res.text();
         if (res.status === 200) {
-          infoMessage.textContent = 'A verification link has been sent to your email. Please verify to continue.';
+          infoMessage.textContent = 'A verification link has been sent to your email. After verification, your account will be pending approval by the Head of Studies.';
           infoMessage.style.display = 'block';
           document.getElementById('signupForm').reset();
         } else {

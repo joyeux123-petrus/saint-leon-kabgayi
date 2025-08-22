@@ -59,6 +59,10 @@
           <label for="content">Content</label>
           <textarea name="content" id="content" rows="12" required maxlength="5000" placeholder="Type your note content here..." oninput="splitContentForKnowledgeCheck()"></textarea>
         </div>
+        <div class="notes-form-row">
+          <label for="summary">Summary</label>
+          <div id="summary-output" class="summary-output-class"></div>
+        </div>
   <div id="knowledge-check-sections"></div>
   <div id="additional-notes-sections"></div>
   <button type="button" class="notes-btn" id="add-note-section-btn" style="margin-top:12px;">Add Another Note Section</button>
@@ -84,6 +88,7 @@
         </div>
         <div class="notes-form-actions">
           <button type="submit" class="notes-btn-primary">Save</button>
+          <button type="button" class="notes-btn-secondary" id="summarize-btn">Summarize</button>
           <button type="button" class="notes-btn-secondary" onclick="hideNoteEditor()">Cancel</button>
         </div>
       </form>

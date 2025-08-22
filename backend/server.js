@@ -9,6 +9,7 @@ const db = require('./db');
 // Import all route modules
 const authRoutes = require('./routes/auth');
 const academicSummaryRoutes = require('./routes/academicSummary');
+const adminAuth = require('./middleware/adminAuth');
 const gospelRoutes = require('./routes/gospel');
 const usersRoutes = require('./routes/users');
 const quizzesRoutes = require('./routes/quizzes');
@@ -58,7 +59,38 @@ app.use('/api/subjects', subjectsRoutes);
 app.use('/api/notes', notesRoutes);
 
 // Serve static files from frontend
+// Serve specific frontend files with protection
+app.get('/saintleon-secure', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend', 'admin-login.html'));
+});
+
+app.get('/admin.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend', 'admin.html'));
+});
+
+// Serve other static files from frontend (excluding specific HTML files handled above)
+// This will serve CSS, JS, images, etc.
 app.use(express.static(path.join(__dirname, '../frontend')));
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// SPA fallback - serve index.html for all other routes not explicitly handled
+app.get('*', (req, res) => {
+  // Don't serve index.html for API routes
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({ error: 'API endpoint not found' });
+  }
+  // If the request is for a specific HTML file that should be protected,
+  // and it wasn't caught by the specific routes above, it's a 404.
+  const requestedFile = req.path.split('/').pop();
+  if (requestedFile.endsWith('.html') && (requestedFile === 'admin.html' || requestedFile === 'admin-login.html')) {
+    return res.status(404).json({ error: 'Route not found' });
+  }
+  res.sendFile(path.join(__dirname, '../frontend', 'index.html'));
+});
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

@@ -3,6 +3,7 @@
 const db = require('../models/db');
 const path = require('path');
 const fs = require('fs');
+const axios = require('axios');
 
 // List notes (for students, only published notes, with optional class filter)
 exports.getAllNotes = async (req, res) => {
