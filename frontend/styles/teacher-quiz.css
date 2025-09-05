@@ -1,0 +1,119 @@
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #0056b3;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#quiz-form {
+    display: grid;
+    grid-gap: 20px;
+}
+
+label {
+    font-weight: 600;
+}
+
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-group input {
+    margin-right: 10px;
+}
+
+#questions-section {
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.question-item {
+    background-color: #fdfdff;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+.question-item h4 {
+    margin-top: 0;
+    color: #0056b3;
+}
+
+.question-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.btn-primary,
+.btn-secondary,
+.remove-question-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.remove-question-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.mcq-options-section,
+.true-false-section,
+.short-answer-section {
+    margin-top: 15px;
+}
+
+.option-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.option-item input[type="text"] {
+    flex-grow: 1;
+    margin-right: 10px;
+}

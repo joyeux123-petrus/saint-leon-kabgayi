@@ -1,46 +1,49 @@
-const db = require('../models/db');
+const connectToDatabase = require('../db.js');
 
-exports.getAllAnnouncements = async (req, res) => {
+const getAllAnnouncements = async (req, res) => {
+  const db = await connectToDatabase();
   try {
-    // Assuming 'title' and 'message' columns exist in the 'announcements' table
-    const [announcements] = await db.query('SELECT id, title, message FROM announcements ORDER BY created_at DESC LIMIT 10');
-    res.json({ announcements });
+    const [announcements] = await db.query('SELECT announcement_id AS id, title, message AS content, date_created AS created_at FROM announcements ORDER BY date_created DESC');
+    res.json(announcements);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch announcements.' });
+    console.error('Error fetching announcements:', err);
+    res.status(500).json({ error: 'Failed to fetch announcements.', details: err.message });
   }
 };
 
-exports.createAnnouncement = async (req, res) => {
-    const { title, message } = req.body;
+const createAnnouncement = async (req, res) => {
+    const db = await connectToDatabase();
+    const { title, content } = req.body;
     try {
-        await db.query('INSERT INTO announcements (title, message) VALUES (?, ?)', [title, message]);
-        res.json({ message: 'Announcement created successfully.' });
+        await db.query('INSERT INTO announcements (title, message) VALUES (?, ?)', [title, content]);
+        res.status(201).json({ message: 'Announcement created successfully.' });
     } catch (err) {
         console.error('Error creating announcement:', err);
         res.status(500).json({ error: 'Failed to create announcement.' });
     }
 };
 
-// Get announcement by ID
-exports.getAnnouncementById = async (req, res) => {
+const getAnnouncementById = async (req, res) => {
+  const db = await connectToDatabase();
   try {
     const { id } = req.params;
-    const [rows] = await db.query('SELECT * FROM announcements WHERE id = ?', [id]);
+    const [rows] = await db.query('SELECT announcement_id AS id, title, message AS content, date_created AS created_at FROM announcements WHERE announcement_id = ?', [id]);
     if (rows.length === 0) {
       return res.status(404).json({ error: 'Announcement not found.' });
     }
-    res.json({ announcement: rows[0] });
+    res.json(rows[0]);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch announcement.' });
   }
 };
 
 // Update announcement
-exports.updateAnnouncement = async (req, res) => {
+const updateAnnouncement = async (req, res) => {
+  const db = await connectToDatabase();
   try {
     const { id } = req.params;
-    const { title, message } = req.body;
-    await db.query('UPDATE announcements SET title=?, message=? WHERE id=?', [title, message, id]);
+    const { title, content } = req.body;
+    await db.query('UPDATE announcements SET title=?, message=? WHERE announcement_id=?', [title, content, id]);
     res.json({ message: 'Announcement updated successfully.' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to update announcement.' });
@@ -48,13 +51,21 @@ exports.updateAnnouncement = async (req, res) => {
 };
 
 // Delete announcement
-exports.deleteAnnouncement = async (req, res) => {
+const deleteAnnouncement = async (req, res) => {
+  const db = await connectToDatabase();
   try {
     const { id } = req.params;
-    await db.query('DELETE FROM announcements WHERE id = ?', [id]);
+    await db.query('DELETE FROM announcements WHERE announcement_id = ?', [id]);
     res.json({ message: 'Announcement deleted successfully.' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete announcement.' });
   }
 };
 
+module.exports = {
+    getAllAnnouncements,
+    createAnnouncement,
+    getAnnouncementById,
+    updateAnnouncement,
+    deleteAnnouncement
+}

@@ -3,39 +3,60 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Teacher's Quiz Creation</title>
-  <link rel="stylesheet" href="styles/teacher-style.css" />
+  <title>Create a New Quiz</title>
+  <link rel="stylesheet" href="styles/teacher-quiz.css" />
 </head>
 <body>
-  <section id="teacher-quiz-section" class="container">
+  <div class="container">
     <h2>Create a New Quiz</h2>
     <form id="quiz-form">
-      <input type="text" id="lesson-name" placeholder="Enter Lesson Name" required />
+      <label for="quiz-title">Quiz Title:</label>
+      <input type="text" id="quiz-title" placeholder="Enter quiz title" required />
+
+      <label for="quiz-description">Quiz Description:</label>
+      <textarea id="quiz-description" placeholder="Enter a brief description of the quiz"></textarea>
+
+      <label for="subject-select">Select Subject:</label>
+      <select id="subject-select" required>
+        <option value="" disabled selected>Please select a subject</option>
+      </select>
+
+      <label for="class-select">Select Class:</label>
       <select id="class-select" required>
-        <option value="">Select Class</option>
-        <option value="Grade 7">Grade 7</option>
-        <option value="Grade 8">Grade 8</option>
-        <option value="Grade 9">Grade 9</option>
-        <option value="Grade 10">Grade 10</option>
-        <option value="Grade 11">Grade 11</option>
-        <option value="Grade 12">Grade 12</option>
+        <option value="" disabled selected>Please select a class</option>
+        <option value="Senior 1">Senior 1</option>
+        <option value="Senior 2">Senior 2</option>
+        <option value="Senior 3">Senior 3</option>
+        <option value="Senior 4">Senior 4</option>
+        <option value="Senior 5">Senior 5</option>
+        <option value="Senior 6">Senior 6</option>
       </select>
 
-      <label for="start-time">Quiz Start Time:</label>
-      <input type="datetime-local" id="start-time" required />
+      <label for="time-limit">Time Limit (minutes, 0 for no limit):</label>
+      <input type="number" id="time-limit" min="0" value="0" />
 
-      <label for="end-time">Quiz End Time:</label>
-      <input type="datetime-local" id="end-time" required />
+      <label for="start-time">Start Time:</label>
+      <input type="datetime-local" id="start-time" />
 
-      <label for="per-question-time">Per Question Time (seconds, 0 for no limit):</label>
-      <input type="number" id="per-question-time" min="0" value="0" />
+      <label for="end-time">End Time:</label>
+      <input type="datetime-local" id="end-time" />
 
-      <label for="timing-mode">Timing Mode:</label>
-      <select id="timing-mode">
-        <option value="overall">Overall Quiz Time</option>
-        <option value="per-question">Per Question Time</option>
-      </select>
+      <div class="checkbox-group">
+        <input type="checkbox" id="randomize-questions" />
+        <label for="randomize-questions">Randomize Questions</label>
+      </div>
 
+      <div class="checkbox-group">
+        <input type="checkbox" id="is-active" checked />
+        <label for="is-active">Active Quiz</label>
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="is-team-based" />
+        <label for="is-team-based">Team-Based Quiz</label>
+      </div>
+
+      <h3>Questions</h3>
       <div id="questions-section">
         <!-- Questions will be dynamically added here -->
       </div>
@@ -43,42 +64,132 @@
       <button type="button" id="add-question-btn" class="btn-secondary">Add Question</button>
       <button type="submit" class="btn-primary">Create Quiz</button>
     </form>
-  </section>
+  </div>
 
   <template id="question-template">
-    <div class="question">
-      <input type="text" placeholder="Enter Question" class="question-text" />
+    <div class="question-item">
+      <div class="question-controls">
+        <h4>Question</h4>
+        <button type="button" class="remove-question-btn">Remove</button>
+      </div>
+      <label>Question Text:</label>
+      <input type="text" placeholder="Enter the question" class="question-text" required />
+      
+      <label>Points:</label>
+      <input type="number" placeholder="Enter points for this question" class="question-points" min="0" value="1" required />
+      
+      <label>Question Type:</label>
       <select class="question-type">
-        <option value="mcq">Multiple Choice</option>
-        <option value="open-ended">Open Ended</option>
-        <option value="fill-in-the-blanks">Fill in the Blanks</option>
-        <option value="match-the-pairs">Match the Pairs</option>
-        <option value="image-based">Image-based</option>
-        <option value="audio">Audio</option>
+        <option value="MCQ_single_answer">Multiple Choice (Single Answer)</option>
+        <option value="MCQ_multiple_answers">Multiple Choice (Multiple Answers)</option>
+        <option value="True/False">True/False</option>
+        <option value="fill_in_the_blanks">Fill-in-the-Blank</option>
+        <option value="Short_Answer">Short Answer</option>
+        <option value="Matching">Matching</option>
+        <option value="Pairing">Pairing</option>
+        <option value="Open-ended">Open-ended</option>
+        <option value="Peer-Graded">Peer-Graded</option>
+        <option value="Video">Video</option>
       </select>
-      <input type="number" placeholder="Marks" class="question-marks" min="1" />
 
-      <div class="mcq-options">
-        <input type="text" placeholder="Choice A" class="choice" />
-        <input type="text" placeholder="Choice B" class="choice" />
-        <input type="text" placeholder="Choice C" class="choice" />
-        <input type="text" placeholder="Choice D" class="choice" />
-        <select class="correct-answer">
-          <option value="A">Choice A</option>
-          <option value="B">Choice B</option>
-          <option value="C">Choice C</option>
-          <option value="D">Choice D</option>
-        </select>
+      <label>Time Limit (seconds):</label>
+      <input type="number" placeholder="Seconds" class="question-time-limit" min="0" value="0" />
+
+      <div class="question-options">
+        <!-- Options for different question types will be injected here -->
       </div>
-
-      <div class="media-url" style="display:none;">
-        <input type="text" placeholder="Enter media URL (image or audio)" class="media-url-input" />
-      </div>
-
-      <button type="button" class="remove-question-btn">Remove Question</button>
     </div>
   </template>
 
-  <script src="teacher-quiz.js"></script>
+  <template id="mcq-options-template">
+    <div class="mcq-options-section">
+      <label>Options:</label>
+      <div class="option-item">
+        <input type="text" placeholder="Option 1" class="option-text" />
+        <input type="radio" name="correct-option" value="0" /> Correct
+      </div>
+      <div class="option-item">
+        <input type="text" placeholder="Option 2" class="option-text" />
+        <input type="radio" name="correct-option" value="1" /> Correct
+      </div>
+      <button type="button" class="add-option-btn">Add Option</button>
+    </div>
+  </template>
+
+  <template id="tf-options-template">
+    <div class="true-false-section">
+      <label>Correct Answer:</label>
+      <div class="option-item">
+        <input type="radio" name="correct-option" value="True" /> True
+      </div>
+      <div class="option-item">
+        <input type="radio" name="correct-option" value="False" /> False
+      </div>
+    </div>
+  </template>
+
+  <template id="sa-options-template">
+    <div class="short-answer-section">
+      <label>Answer (optional, for grading reference):</label>
+      <textarea placeholder="Enter the correct answer"></textarea>
+    </div>
+  </template>
+
+  <template id="fill-in-the-blank-options-template">
+    <div class="fill-in-the-blank-section">
+      <label>Correct Answer:</label>
+      <input type="text" placeholder="Enter the correct answer" class="correct-answer" />
+    </div>
+  </template>
+
+  <template id="matching-options-template">
+    <div class="matching-section">
+      <label>Matching Pairs:</label>
+      <div class="matching-pair">
+        <input type="text" placeholder="Prompt" class="prompt" />
+        <input type="text" placeholder="Correct Match" class="correct-match" />
+      </div>
+      <button type="button" class="add-matching-pair-btn">Add Pair</button>
+    </div>
+  </template>
+
+  <template id="video-options-template">
+    <div class="video-section">
+      <label>Video URL:</label>
+      <input type="text" placeholder="Enter video URL" class="video-url" />
+      
+      <h4>Sub-Questions</h4>
+      <div class="sub-questions-section">
+        <!-- Sub-questions will be dynamically added here -->
+      </div>
+      <button type="button" class="add-sub-question-btn btn-secondary">Add Sub-Question</button>
+    </div>
+  </template>
+
+  <template id="sub-question-template">
+    <div class="sub-question-item">
+        <div class="question-controls">
+            <h5>Sub-Question</h5>
+            <button type="button" class="remove-question-btn">Remove</button>
+        </div>
+        <label>Question Text:</label>
+        <input type="text" placeholder="Enter the question" class="question-text" required />
+        
+        <label>Question Type:</label>
+        <select class="question-type">
+            <option value="MCQ_single_answer">Multiple Choice (Single Answer)</option>
+            <option value="MCQ_multiple_answers">Multiple Choice (Multiple Answers)</option>
+            <option value="True/False">True/False</option>
+            <option value="fill_in_the_blanks">Fill-in-the-Blank</option>
+            <option value="Short_Answer">Short Answer</option>
+        </select>
+
+        <div class="question-options">
+            <!-- Options for different question types will be injected here -->
+        </div>
+    </div>
+  </template>
+
+  <script src="js/teacher-quiz.js"></script>
 </body>
 </html>

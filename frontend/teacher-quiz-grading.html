@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Grading & Marks</title>
+    <link rel="stylesheet" href="styles/teacher-dashboard.css">
+    <link rel="stylesheet" href="styles/teacher-style.css"> <!-- Include the main teacher styles -->
+    <style>
+        /* Specific styles for this page's menu */
+        .grading-options-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: var(--secondary-dark-bg); /* Using variable from teacher-style.css */
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        .grading-options-container h2 {
+            color: var(--text-color);
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+        .grading-options-container .option-button {
+            display: block;
+            width: 80%;
+            margin: 20px auto;
+            padding: 15px 25px;
+            font-size: 1.2em;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none; /* For anchor tags */
+        }
+        .grading-options-container .option-button:hover {
+            background-color: var(--accent-hover-color);
+        }
+        /* Styles for the pending attempts list, adapted for dark theme */
+        #pending-attempts-list-container {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: var(--secondary-dark-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        .attempt-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--light-text-color);
+        }
+        .attempt-card-info p strong {
+            color: var(--text-color);
+        }
+        .attempt-card-actions button {
+            padding: 8px 15px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
+        .attempt-card-actions button:hover {
+            background-color: var(--accent-hover-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="grading-options-container" id="main-options-menu">
+        <h2>Quiz Grading & Marks Management</h2>
+        <a href="teacher-view-marks.html" class="option-button">View Marks of Students</a>
+        <button class="option-button" id="mark-students-btn">Mark Students (Pending Review)</button>
+    </div>
+
+    <div id="pending-attempts-list-container" style="display: none;">
+        <div class="container"> <!-- Re-using container class for consistent styling -->
+            <h2>Quiz Attempts Pending Review</h2>
+            <div id="pending-attempts-list">
+                <p>Loading pending attempts...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/teacher-quiz-grading.js"></script>
+</body>
+</html>

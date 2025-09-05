@@ -1,10 +1,12 @@
 const bcrypt = require('bcrypt');
 
-async function generateHash() {
-  const password = "Rud@2025!SeLk#HQ";
-  const hash = await bcrypt.hash(password, 12);
-  console.log("Password:", password);
-  console.log("BCrypt Hash:", hash);
-}
+const plainPassword = 'Rud@Sumbwa!2025#Adm'; // Replace with the actual password you want to use
+const saltRounds = 10;
 
-generateHash().catch(console.error);
+bcrypt.hash(plainPassword, saltRounds, function(err, hash) {
+    if (err) {
+        console.error('Error hashing password:', err);
+        return;
+    }
+    console.log('Hashed Password:', hash);
+});

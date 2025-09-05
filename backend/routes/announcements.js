@@ -1,15 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const announcementsController = require('../controllers/announcementsController');
-const auth = require('../middleware/auth');
+router.use(express.json());
+router.use(express.urlencoded({ extended: true }));
+const announcementsController = require('../controllers/announcementsController.js');
+const auth = require('../middleware/auth.js');
+const adminAuth = require('../middleware/adminAuth.js');
 
 // Announcement routes - fixed routes first
 router.get('/', announcementsController.getAllAnnouncements);
-router.post('/', auth.verifyToken, announcementsController.createAnnouncement);
+router.post('/', adminAuth, announcementsController.createAnnouncement);
 
 // Dynamic routes last
 router.get('/:id', announcementsController.getAnnouncementById);
-router.put('/:id', auth.verifyToken, announcementsController.updateAnnouncement);
-router.delete('/:id', auth.verifyToken, announcementsController.deleteAnnouncement);
+router.put('/:id', adminAuth, announcementsController.updateAnnouncement);
+router.delete('/:id', adminAuth, announcementsController.deleteAnnouncement);
 
 module.exports = router;

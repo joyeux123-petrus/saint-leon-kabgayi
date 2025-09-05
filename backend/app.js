@@ -1,0 +1,66 @@
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+
+const academicSummaryRouter = require('./routes/academicSummary');
+const adminRouter = require('./routes/admin');
+const aiTutorRouter = require('./routes/aiTutor');
+const analyticsRouter = require('./routes/analytics');
+const announcementsRouter = require('./routes/announcements');
+const authRouter = require('./routes/auth');
+const clubsRouter = require('./routes/clubs');
+const coursesRouter = require('./routes/courses');
+const dashboardRouter = require('./routes/dashboard');
+const engagementRouter = require('./routes/engagement');
+const eventsRouter = require('./routes/events');
+const gospelRouter = require('./routes/gospel');
+const helpRouter = require('./routes/help');
+const leaderboardRouter = require('./routes/leaderboard');
+const lectionesRouter = require('./routes/lectiones');
+const messagesRouter = require('./routes/messages');
+const mynotesRouter = require('./routes/mynotes');
+const notesRouter = require('./routes/notes');
+const quizzesRouter = require('./routes/quizzes');
+const studentDashboardRouter = require('./routes/studentDashboard');
+const subjectsRouter = require('./routes/subjects');
+const uploadRouter = require('./routes/upload');
+const usersRouter = require('./routes/users');
+const vaticanNewsRouter = require('./routes/vaticanNews');
+
+const app = express();
+
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/api/academic-summary', academicSummaryRouter);
+app.use('/api/admin', adminRouter);
+app.use('/api/ai-tutor', aiTutorRouter);
+app.use('/api/analytics', analyticsRouter);
+app.use('/api/announcements', announcementsRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/clubs', clubsRouter);
+app.use('/api/courses', coursesRouter);
+app.use('/api/dashboard', dashboardRouter);
+app.use('/api/engagement', engagementRouter);
+app.use('/api/events', eventsRouter);
+app.use('/api/gospel', gospelRouter);
+app.use('/api/help', helpRouter);
+app.use('/api/leaderboard', leaderboardRouter);
+app.use('/api/lectiones', lectionesRouter);
+app.use('/api/messages', messagesRouter);
+app.use('/api/mynotes', mynotesRouter);
+app.use('/api/notes', notesRouter);
+const annotationsRouter = require('./routes/annotations');
+app.use('./routes/annotations', annotationsRouter);
+app.use('/api/quizzes', quizzesRouter);
+app.use('/api/student-dashboard', studentDashboardRouter);
+app.use('/api/subjects', subjectsRouter);
+app.use('/api/upload', uploadRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/vatican-news', vaticanNewsRouter);
+
+module.exports = app;

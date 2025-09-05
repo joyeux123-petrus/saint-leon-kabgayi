@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Attempt Details</title>
+  <link rel="stylesheet" href="styles/teacher-style.css" />
+  
+</head>
+<body>
+  <div class="container">
+    <h2 id="page-title">Quiz Attempt Details</h2>
+    <div id="attempt-summary" class="attempt-summary">
+      <p><strong>Quiz:</strong> <span id="quiz-title"></span></p>
+      <p><strong>Student:</strong> <span id="student-name"></span></p>
+      <p><strong>Class:</strong> <span id="student-class"></span></p>
+      <p><strong>Score:</strong> <span id="attempt-score"></span>%</p>
+      <p><strong>Submitted At:</strong> <span id="submitted-at"></span></p>
+      <p><strong>Overall Feedback:</strong> <span id="overall-feedback"></span></p>
+      <p><strong>AI Personalization:</strong> <span id="ai-personalization"></span></p>
+    </div>
+
+    <div id="questions-container">
+      <!-- Question details will be loaded here -->
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const attemptId = urlParams.get('attemptId');
+      const isTeacherView = urlParams.get('teacherView') === 'true';
+
+      const pageTitle = document.getElementById('page-title');
+      const quizTitleSpan = document.getElementById('quiz-title');
+      const studentNameSpan = document.getElementById('student-name');
+      const studentClassSpan = document.getElementById('student-class');
+      const attemptScoreSpan = document.getElementById('attempt-score');
+      const submittedAtSpan = document.getElementById('submitted-at');
+      const overallFeedbackSpan = document.getElementById('overall-feedback');
+      const aiPersonalizationSpan = document.getElementById('ai-personalization');
+      const questionsContainer = document.getElementById('questions-container');
+
+      if (!attemptId) {
+        pageTitle.textContent = 'Error: Attempt ID missing.';
+        return;
+      }
+
+      const getToken = () => localStorage.getItem('token');
+
+      const authenticatedFetch = async (url, options = {}) => {
+        const token = getToken();
+        const headers = {
+          'Content-Type': 'application/json',
+          ...
+        };
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+        const response = await fetch(url, { ...options, headers });
+        if (response.status === 401) {
+          alert('Session expired or unauthorized. Please log in again.');
+          window.location.href = 'login.html';
+          throw new Error('Unauthorized');
+        }
+        return response;
+      };
+
+      // Recursive function to render questions and sub-questions
+      const renderQuestion = (question, isSubQuestion = false) => {
+        let questionHtml = '';
+        let studentAnswerContent = '';
+        let correctnessIndicator = '';
+        let correctAnswerDisplay = '';
+        let mediaDisplay = '';
+        let feedbackSection = '';
+
+        let questionClass = isSubQuestion ? 'sub-question-detail' : 'question-detail';
+        let questionTitleTag = isSubQuestion ? 'h4' : 'h3';
+
+        const studentAnswer = question.student_answer;
+
+        if (studentAnswer) {
+          if (question.question_type === 'MCQ_single_answer' || question.question_type === 'MCQ_multiple_answers' || question.question_type === 'True/False') {
+            studentAnswerContent = `
+              <p><strong>Your Selected Option:</strong> ${studentAnswer.selected_option_text || 'N/A'}</p>
+              <p><strong>Options:</strong></p>
+              <ul>
+                ${question.options.map(opt => {
+                  let optionClass = '';
+                  if (opt.is_correct) optionClass = 'correct-answer-text';
+                  else if (studentAnswer.selected_option_id === opt.id && !studentAnswer.is_correct) optionClass = 'incorrect-answer-text';
+                  return `<li class="${optionClass}">${opt.option_text} ${opt.is_correct ? '(Correct)' : ''}</li>`;
+                }).join('')}
+              </ul>
+            `;
+            correctnessIndicator = `<p><strong>Result:</strong> <span class="${studentAnswer.is_correct ? 'correct-answer-text' : 'incorrect-answer-text'}">${studentAnswer.is_correct ? 'Correct' : 'Incorrect'}</span></p>`;
+          } else if (question.question_type === 'Fill-in-the-Blank' || question.question_type === 'Short_Answer') {
+            studentAnswerContent = `<p><strong>Your Answer:</strong> ${studentAnswer.answer_text || 'N/A'}</p>`;
+            correctAnswerDisplay = `<p><strong>Correct Answer:</strong> <span class="correct-answer-text">${question.correct_answer || 'N/A'}</span></p>`;
+            correctnessIndicator = `<p><strong>Result:</strong> <span class="${studentAnswer.is_correct ? 'correct-answer-text' : 'incorrect-answer-text'}">${studentAnswer.is_correct ? 'Correct' : 'Incorrect'}</span></p>`;
+          } else if (question.question_type === 'Matching') {
+            let submittedMatchesHtml = 'N/A';
+            if (studentAnswer.answer_text) {
+              try {
+                const submittedMatches = JSON.parse(studentAnswer.answer_text);
+                submittedMatchesHtml = '<ul>';
+                for (const promptText in submittedMatches) {
+                  submittedMatchesHtml += `<li>${promptText} -> ${submittedMatches[promptText]}</li>`;
+                }
+                submittedMatchesHtml += '</ul>';
+              } catch (e) {
+                console.error('Error parsing matching answer_text:', e);
+                submittedMatchesHtml = 'Invalid Answer Format';
+              }
+            }
+            studentAnswerContent = `<p><strong>Your Answers:</strong> ${submittedMatchesHtml}</p>`;
+            correctAnswerDisplay = `<p><strong>Correct Pairs:</strong></p><ul>${question.matching_pairs.map(pair => `<li>${pair.prompt} -> ${pair.correct_match}</li>`).join('')}</ul>`;
+            correctnessIndicator = `<p><strong>Status:</strong> Needs Manual Grading</p>`;
+          } else {
+            // For Open-ended, Peer-Graded, Video (main question), etc.
+            studentAnswerContent = `<p><strong>Your Answer:</strong> ${studentAnswer.answer_text || 'N/A'}</p>`;
+            correctnessIndicator = `<p><strong>Status:</strong> Needs Manual Grading</p>`;
+          }
+        } else {
+            studentAnswerContent = `<p><strong>Your Answer:</strong> Not answered</p>`;
+            correctnessIndicator = `<p><strong>Status:</strong> Not Answered</p>`;
+        }
+
+        if (question.media_url) {
+          const fileExtension = question.media_url.split('.').pop().toLowerCase();
+          if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+            mediaDisplay = `<div class="media-display"><img src="${question.media_url}" alt="Question Media" /></div>`;
+          } else if (['mp3', 'wav', 'ogg'].includes(fileExtension)) {
+            mediaDisplay = `<div class="media-display"><audio controls src="${question.media_url}"></audio></div>`;
+          } else if (['mp4', 'mov', 'avi'].includes(fileExtension)) {
+            mediaDisplay = `<div class="media-display"><video controls src="${question.media_url}"></video></div>`;
+          }
+        }
+
+        // Teacher feedback section (only for teacher view and if answer exists and needs grading)
+        if (isTeacherView && studentAnswer && studentAnswer.is_correct === null) {
+            feedbackSection = `
+                <div class="feedback-section">
+                    <label for="teacher-feedback-${studentAnswer.id}">Teacher Feedback:</label>
+                    <textarea id="teacher-feedback-${studentAnswer.id}" rows="3">${studentAnswer.teacher_feedback || ''}</textarea>
+                    <label for="score-override-${studentAnswer.id}">Score (Current: ${studentAnswer.score || 0}):</label>
+                    <input type="number" id="score-override-${studentAnswer.id}" min="0" value="${studentAnswer.score || 0}" />
+                    <div style="margin-top: 10px;">
+                        <input type="radio" id="grade-correct-${studentAnswer.id}" name="grade-${studentAnswer.id}" value="1" ${studentAnswer.is_correct === true ? 'checked' : ''}>
+                        <label for="grade-correct-${studentAnswer.id}">Correct</label>
+                        <input type="radio" id="grade-incorrect-${studentAnswer.id}" name="grade-${studentAnswer.id}" value="0" ${studentAnswer.is_correct === false ? 'checked' : ''}>
+                        <label for="grade-incorrect-${studentAnswer.id}">Incorrect</label>
+                    </div>
+                    <button class="btn-save-feedback" data-answer-id="${studentAnswer.id}">Save Grade</button>
+                </div>
+            `;
+        } else if (isTeacherView && studentAnswer && studentAnswer.is_correct !== null) {
+            // Display feedback section for already graded questions in teacher view
+            feedbackSection = `
+                <div class="feedback-section">
+                    <p><strong>Teacher Feedback:</strong> ${studentAnswer.teacher_feedback || 'N/A'}</p>
+                    <p><strong>Score:</strong> ${studentAnswer.score || 'N/A'}</p>
+                    <p><strong>Graded as:</strong> ${studentAnswer.is_correct === true ? 'Correct' : 'Incorrect'}</p>
+                </div>
+            `;
+        }
+
+        questionHtml += `
+          <div class="${questionClass}">
+            <${questionTitleTag}>Question: ${question.question_text}</${questionTitleTag}>
+            <p><strong>Question Type:</strong> ${question.question_type}</p>
+            ${mediaDisplay}
+            ${studentAnswerContent}
+            ${correctAnswerDisplay}
+            ${correctnessIndicator}
+            <p><strong>AI Feedback:</strong> ${studentAnswer && studentAnswer.ai_feedback ? studentAnswer.ai_feedback : 'N/A'}</p>
+            ${feedbackSection}
+        `;
+
+        if (question.sub_questions && question.sub_questions.length > 0) {
+          questionHtml += `<div class="sub-questions-container"><h4>Sub-Questions:</h4>`;
+          question.sub_questions.forEach(subQ => {
+            questionHtml += renderQuestion(subQ, true); // Recursively render sub-questions
+          });
+          questionHtml += `</div>`;
+        }
+
+        questionHtml += `</div>`;
+        return questionHtml;
+      };
+
+      try {
+        const response = await authenticatedFetch(`/api/quizzes/attempts/${attemptId}/details`);
+        const data = await response.json();
+
+        quizTitleSpan.textContent = data.quiz_title;
+        studentNameSpan.textContent = data.student_name;
+        studentClassSpan.textContent = data.student_class;
+        attemptScoreSpan.textContent = data.score;
+        submittedAtSpan.textContent = new Date(data.submitted_at).toLocaleString();
+        overallFeedbackSpan.textContent = data.feedback ? JSON.stringify(data.feedback, null, 2) : 'N/A';
+        aiPersonalizationSpan.textContent = data.ai_personalization ? JSON.stringify(data.ai_personalization, null, 2) : 'N/A';
+
+        questionsContainer.innerHTML = data.questions.map(question => renderQuestion(question, false)).join('');
+
+        // Add event listeners for save feedback buttons (only in teacher view)
+        if (isTeacherView) {
+            questionsContainer.querySelectorAll('.btn-save-feedback').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    const studentAnswerId = e.target.dataset.answerId;
+                    const feedbackText = document.getElementById(`teacher-feedback-${studentAnswerId}`).value;
+                    const scoreOverride = parseFloat(document.getElementById(`score-override-${studentAnswerId}`).value);
+                    const isCorrectRadio = document.querySelector(`input[name="grade-${studentAnswerId}"]:checked`);
+                    let isCorrect = null;
+                    if (isCorrectRadio) {
+                        isCorrect = isCorrectRadio.value === '1' ? true : false;
+                    }
+
+                    try {
+                        const response = await authenticatedFetch(`/api/quizzes/attempts/answers/${studentAnswerId}/grade`, {
+                            method: 'PATCH',
+                            body: JSON.stringify({
+                                teacher_feedback: feedbackText,
+                                score: scoreOverride,
+                                is_correct: isCorrect
+                            })
+                        });
+
+                        if (response.ok) {
+                            alert('Grade saved successfully!');
+                            // Optionally, refresh the page or update the score display
+                            location.reload();
+                        } else {
+                            const errorData = await response.json();
+                            alert(`Failed to save grade: ${errorData.message || errorData.error}`);
+                        }
+                    } catch (error) {
+                        console.error('Error saving grade:', error);
+                        alert('Failed to save grade due to network error.');
+                    }
+                });
+            });
+        }
+
+      } catch (error) {
+        console.error('Error loading quiz attempt details:', error);
+        pageTitle.textContent = 'Error loading quiz attempt details.';
+      }
+    });
+  </script>
+</body>
+</html>

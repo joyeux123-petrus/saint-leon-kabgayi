@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Quiz Attempt Details</title>
+  <link rel="stylesheet" href="styles/student-dashboard.css"> <!-- Reusing student dashboard styles -->
+  <style>
+    .container {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .attempt-summary {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #eee;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+    .question-detail {
+      margin-bottom: 25px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #fff;
+    }
+    .sub-question-detail {
+      margin-top: 15px;
+      margin-left: 20px;
+      padding: 10px;
+      border: 1px dashed #ccc;
+      border-radius: 5px;
+      background-color: #fefefe;
+    }
+    .question-detail h3, .sub-question-detail h4 {
+      margin-top: 0;
+      color: var(--dark-blue);
+    }
+    .question-detail p, .sub-question-detail p {
+      margin-bottom: 5px;
+    }
+    .correct-answer-text {
+      color: green;
+      font-weight: bold;
+    }
+    .incorrect-answer-text {
+      color: red;
+      font-weight: bold;
+    }
+    .media-display img, .media-display audio, .media-display video {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 id="page-title">My Quiz Attempt Details</h2>
+    <div id="attempt-summary" class="attempt-summary">
+      <p><strong>Quiz:</strong> <span id="quiz-title"></span></p>
+      <p><strong>Score:</strong> <span id="attempt-score"></span>%</p>
+      <p><strong>Submitted At:</strong> <span id="submitted-at"></span></p>
+      <p><strong>Overall Feedback:</strong> <span id="overall-feedback"></span></p>
+      <p><strong>AI Personalization:</strong> <span id="ai-personalization"></span></p>
+    </div>
+
+    <div id="questions-container">
+      <!-- Question details will be loaded here -->
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const attemptId = urlParams.get('attemptId');
+
+      const pageTitle = document.getElementById('page-title');
+      const quizTitleSpan = document.getElementById('quiz-title');
+      const attemptScoreSpan = document.getElementById('attempt-score');
+      const submittedAtSpan = document.getElementById('submitted-at');
+      const questionsContainer = document.getElementById('questions-container');
+
+      if (!attemptId) {
+        pageTitle.textContent = 'Error: Attempt ID missing.';
+        return;
+      }
+
+      const getToken = () => localStorage.getItem('token');
+
+      const authenticatedFetch = async (url, options = {}) => {
+        const token = getToken();
+        const headers = {
+          'Content-Type': 'application/json',
+          // ...
+        };
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+        const response = await fetch(url, { ...options, headers });
+        if (response.status === 401) {
+          alert('Session expired or unauthorized. Please log in again.');
+          window.location.href = 'login.html';
+          throw new Error('Unauthorized');
+        }
+        return response;
+      };
+
+      // Recursive function to render questions and sub-questions
+      const renderQuestion = (question, isSubQuestion = false) => {
+        let questionHtml = '';
+        let studentAnswerContent = '';
+        let correctnessIndicator = '';
+        let correctAnswerDisplay = '';
+        let mediaDisplay = '';
+        let questionClass = isSubQuestion ? 'sub-question-detail' : 'question-detail';
+        let questionTitleTag = isSubQuestion ? 'h4' : 'h3';
+
+        const studentAnswer = question.student_answer;
+
+        if (studentAnswer) {
+          if (question.question_type === 'MCQ_single_answer' || question.question_type === 'MCQ_multiple_answers' || question.question_type === 'True/False') {
+            studentAnswerContent = `
+              <p><strong>Your Selected Option:</strong> ${studentAnswer.selected_option_text || 'N/A'}</p>
+              <p><strong>Options:</strong></p>
+              <ul>
+                ${question.options.map(opt => {
+                  let optionClass = '';
+                  if (opt.is_correct) optionClass = 'correct-answer-text';
+                  else if (studentAnswer.selected_option_id === opt.id && !studentAnswer.is_correct) optionClass = 'incorrect-answer-text';
+                  return `<li class="${optionClass}">${opt.option_text} ${opt.is_correct ? '(Correct)' : ''}</li>`;
+                }).join('')}
+              </ul>
+            `;
+            correctnessIndicator = `<p><strong>Result:</strong> <span class="${studentAnswer.is_correct ? 'correct-answer-text' : 'incorrect-answer-text'}">${studentAnswer.is_correct ? 'Correct' : 'Incorrect'}</span></p>`;
+          } else if (question.question_type === 'Fill-in-the-Blank' || question.question_type === 'Short_Answer') {
+            studentAnswerContent = `<p><strong>Your Answer:</strong> ${studentAnswer.answer_text || 'N/A'}</p>`;
+            correctAnswerDisplay = `<p><strong>Correct Answer:</strong> <span class="correct-answer-text">${question.correct_answer || 'N/A'}</span></p>`;
+            correctnessIndicator = `<p><strong>Result:</strong> <span class="${studentAnswer.is_correct ? 'correct-answer-text' : 'incorrect-answer-text'}">${studentAnswer.is_correct ? 'Correct' : 'Incorrect'}</span></p>`;
+          } else if (question.question_type === 'Matching') {
+            // For matching, display student's answers and correct pairs
+            studentAnswerContent = `<p><strong>Your Answers:</strong> ${studentAnswer.answer_text || 'N/A'}</p>`; // Assuming answer_text stores matching answers
+            correctAnswerDisplay = `<p><strong>Correct Pairs:</strong></p><ul>${question.matching_pairs.map(pair => `<li>${pair.prompt} -> ${pair.correct_match}</li>`).join('')}</ul>`;
+            correctnessIndicator = `<p><strong>Status:</strong> Needs Manual Grading</p>`; // Matching is manual for now
+          } else {
+            // For Open-ended, Peer-Graded, Video (main question), etc.
+            studentAnswerContent = `<p><strong>Your Answer:</strong> ${studentAnswer.answer_text || 'N/A'}</p>`;
+            correctnessIndicator = `<p><strong>Status:</strong> Needs Manual Grading</p>`;
+          }
+        } else {
+            studentAnswerContent = `<p><strong>Your Answer:</strong> Not answered</p>`;
+            correctnessIndicator = `<p><strong>Status:</strong> Not Answered</p>`;
+        }
+
+        if (question.media_url) {
+          const fileExtension = question.media_url.split('.').pop().toLowerCase();
+          if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+            mediaDisplay = `<div class="media-display"><img src="${question.media_url}" alt="Question Media" /></div>`;
+          } else if (['mp3', 'wav', 'ogg'].includes(fileExtension)) {
+            mediaDisplay = `<div class="media-display"><audio controls src="${question.media_url}"></audio></div>`;
+          } else if (['mp4', 'mov', 'avi'].includes(fileExtension)) {
+            mediaDisplay = `<div class="media-display"><video controls src="${question.media_url}"></video></div>`;
+          }
+        }
+
+        questionHtml += `
+          <div class="${questionClass}">
+            <${questionTitleTag}>Question: ${question.question_text}</${questionTitleTag}>
+            <p><strong>Question Type:</strong> ${question.question_type}</p>
+            ${mediaDisplay}
+            ${studentAnswerContent}
+            ${correctAnswerDisplay}
+            ${correctnessIndicator}
+            <p><strong>Teacher Feedback:</strong> ${studentAnswer && studentAnswer.teacher_feedback ? studentAnswer.teacher_feedback : 'N/A'}</p>
+            <p><strong>AI Feedback:</strong> ${studentAnswer && studentAnswer.ai_feedback ? studentAnswer.ai_feedback : 'N/A'}</p>
+        `;
+
+        if (question.sub_questions && question.sub_questions.length > 0) {
+          questionHtml += `<div class="sub-questions-container"><h4>Sub-Questions:</h4>`;
+          question.sub_questions.forEach(subQ => {
+            questionHtml += renderQuestion(subQ, true); // Recursively render sub-questions
+          });
+          questionHtml += `</div>`;
+        }
+
+        questionHtml += `</div>`;
+        return questionHtml;
+      };
+
+      try {
+        const response = await authenticatedFetch(`/api/quizzes/attempts/${attemptId}`);
+        const data = await response.json();
+
+        quizTitleSpan.textContent = data.quiz_title;
+        attemptScoreSpan.textContent = data.score;
+        submittedAtSpan.textContent = new Date(data.submitted_at).toLocaleString(); // Changed to submitted_at
+        document.getElementById('overall-feedback').textContent = data.feedback ? JSON.stringify(data.feedback, null, 2) : 'N/A';
+        document.getElementById('ai-personalization').textContent = data.ai_personalization ? JSON.stringify(data.ai_personalization, null, 2) : 'N/A';
+
+        questionsContainer.innerHTML = data.questions.map(question => renderQuestion(question)).join('');
+
+      } catch (error) {
+        console.error('Error loading quiz attempt details:', error);
+        pageTitle.textContent = 'Error loading quiz attempt details.';
+      }
+    });
+  </script>
+</body>
+</html>

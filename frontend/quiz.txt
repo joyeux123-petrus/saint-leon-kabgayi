@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS quizzes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  subject_id INT NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  time_limit INT, -- in minutes
+  start_time DATETIME,
+  end_time DATETIME,
+  quiz_type ENUM('standard', 'video', 'scenario', 'reflective', 'gamified') DEFAULT 'standard',
+  randomize_questions BOOLEAN DEFAULT FALSE,
+  is_team_based BOOLEAN DEFAULT FALSE,
+  created_by INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (subject_id) REFERENCES subjects(id),
+  FOREIGN KEY (created_by) REFERENCES users(id)
+);

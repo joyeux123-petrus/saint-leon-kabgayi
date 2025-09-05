@@ -3,7 +3,7 @@ const rateLimit = {};
 const WINDOW_SIZE = 15 * 60 * 1000; // 15 minutes
 const MAX_ATTEMPTS = 10; // max 10 requests per window
 
-module.exports = function (req, res, next) {
+const rateLimitMiddleware = function (req, res, next) {
   const ip = req.ip;
   const now = Date.now();
   if (!rateLimit[ip]) {
@@ -17,3 +17,5 @@ module.exports = function (req, res, next) {
   rateLimit[ip].push(now);
   next();
 };
+
+module.exports = rateLimitMiddleware;

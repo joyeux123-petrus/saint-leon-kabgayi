@@ -1,15 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const subjectsController = require('../controllers/subjectsController');
-const auth = require('../middleware/auth');
+router.use(express.json());
+router.use(express.urlencoded({ extended: true }));
+const subjectsController = require('../controllers/subjectsController.js');
+const { verifyToken } = require('../middleware/auth.js');
+const adminAuth = require('../middleware/adminAuth.js');
 
-// Subject routes - fixed routes first
-router.get('/', subjectsController.getAllSubjects);
-router.post('/', auth.verifyToken, subjectsController.createSubject);
+// Admin-only routes
+router.post('/', adminAuth, subjectsController.createSubject);
+router.put('/:id', adminAuth, subjectsController.updateSubject);
+router.delete('/:id', adminAuth, subjectsController.deleteSubject);
 
-// Dynamic routes last
-router.get('/:id', subjectsController.getSubjectById);
-router.put('/:id', auth.verifyToken, subjectsController.updateSubject);
-router.delete('/:id', auth.verifyToken, subjectsController.deleteSubject);
+// Authenticated user routes (students, teachers, admins)
+router.get('/', verifyToken, subjectsController.getAllSubjects);
+router.get('/:id', verifyToken, subjectsController.getSubjectById);
 
 module.exports = router;

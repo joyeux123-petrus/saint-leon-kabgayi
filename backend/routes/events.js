@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const eventsController = require('../controllers/eventsController');
-const auth = require('../middleware/auth');
+router.use(express.json());
+router.use(express.urlencoded({ extended: true }));
+const eventsController = require('../controllers/eventsController.js');
+const auth = require('../middleware/auth.js');
 
 // Events routes - fixed routes first
 router.get('/', eventsController.getAllEvents);

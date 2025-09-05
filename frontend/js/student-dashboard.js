@@ -1,468 +1,362 @@
-// student-dashboard.js
+    const getAuthToken = () => localStorage.getItem('token');
+    const getStudentId = () => localStorage.getItem('student_id'); // Assuming student_id is stored here
 
-document.addEventListener('DOMContentLoaded', () => {
-    const sidebar = document.querySelector('.sidebar');
-    const mainContent = document.querySelector('.main-content');
-    const sidebarToggle = document.querySelector('.sidebar-toggle'); // New sidebar toggle button
-    const mobileMenuButtonMain = document.querySelector('.header .mobile-menu-button-main');
-    const userProfileDropdown = document.querySelector('.user-profile-dropdown');
-    const userProfileTrigger = document.querySelector('.user-profile-trigger');
-    const menuItems = document.querySelectorAll('.menu-item'); // Select menu items directly
-    const contentSections = document.querySelectorAll('.content-section');
+    const quizzesList = document.getElementById('quizzes-list');
+    const quizResultsList = document.getElementById('quiz-results-list');
+    const leaderboardTableBody = document.getElementById('leaderboard-table-body');
 
-    // Function to toggle sidebar visibility and main content margin
-    const toggleSidebar = () => {
-        sidebar.classList.toggle('collapsed');
-        mainContent.classList.toggle('sidebar-collapsed');
+    const fetchQuizzes = async () => {
+        try {
+            const token = getAuthToken();
+            if (!token) return;
+
+            const response = await fetch('/api/quizzes', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const quizzes = await response.json();
+            renderQuizzes(quizzes);
+        } catch (error) {
+            console.error('Error fetching quizzes:', error);
+        }
     };
 
-    // Event listener for the new sidebar toggle button
-    if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', toggleSidebar);
-    }
-
-    // Event listener for the mobile menu button in the main header (now also toggles sidebar)
-    if (mobileMenuButtonMain) {
-        mobileMenuButtonMain.addEventListener('click', () => {
-            sidebar.classList.toggle('mobile-open');
+    const renderQuizzes = (quizzes) => {
+        quizzesList.innerHTML = '';
+        if (!quizzes || quizzes.length === 0) {
+            quizzesList.innerHTML = '<p>No quizzes available.</p>';
+            return;
+        }
+        quizzes.forEach(quiz => {
+            const quizCard = document.createElement('div');
+            quizCard.className = 'bg-white p-4 rounded-lg shadow-md';
+            quizCard.innerHTML = `
+                <h3 class="text-lg font-semibold text-gray-800">${quiz.title}</h3>
+                <p class="text-sm text-gray-600">Subject: ${quiz.subject_name}</p>
+                <p class="text-sm text-gray-600">Teacher: ${quiz.teacher_name}</p>
+                <button class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 take-quiz-btn" data-id="${quiz.id}">Take Quiz</button>
+            `;
+            quizzesList.appendChild(quizCard);
         });
-    }
+    };
 
-    // Function to show a specific content section
+    const fetchStudentQuizAttempts = async () => {
+        try {
+            const token = getAuthToken();
+            if (!token) return;
+
+            const response = await fetch('/api/quizzes/attempts/student', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const attempts = await response.json();
+            renderQuizAttempts(attempts);
+        } catch (error) {
+            console.error('Error fetching student quiz attempts:', error);
+        }
+    };
+
+    const renderQuizAttempts = (attempts) => {
+        quizResultsList.innerHTML = '';
+        if (!attempts || attempts.length === 0) {
+            quizResultsList.innerHTML = '<p>No quiz results available.</p>';
+            return;
+        }
+        attempts.forEach(attempt => {
+            const attemptCard = document.createElement('div');
+            attemptCard.className = 'bg-white p-4 rounded-lg shadow-md';
+            attemptCard.innerHTML = `
+                <h3 class="text-lg font-semibold text-gray-800">${attempt.quiz_title}</h3>
+                <p class="text-sm text-gray-600">Score: ${attempt.score !== null ? attempt.score : 'N/A'}</p>
+                <p class="text-sm text-gray-600">Date: ${new Date(attempt.attempt_date).toLocaleDateString()}</p>
+                <button class="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 view-attempt-details-btn" data-id="${attempt.id}">View Details</button>
+            `;
+            quizResultsList.appendChild(attemptCard);
+        });
+    };
+
+    const fetchOverallLeaderboard = async () => {
+        try {
+            const token = getAuthToken();
+            if (!token) return;
+
+            const response = await fetch('/api/leaderboard/overall', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const leaderboardData = await response.json();
+            renderOverallLeaderboard(leaderboardData);
+        } catch (error) {
+            console.error('Error fetching overall leaderboard:', error);
+        }
+    };
+
+    const renderOverallLeaderboard = (data) => {
+        leaderboardTableBody.innerHTML = '';
+        if (!data || data.length === 0) {
+            leaderboardTableBody.innerHTML = '<tr><td colspan="3" class="text-center py-4">No leaderboard data available.</td></tr>';
+            return;
+        }
+        data.forEach(entry => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="py-2 px-4 border-b border-gray-200">${entry.rank}</td>
+                <td class="py-2 px-4 border-b border-gray-200">${entry.student_name}</td>
+                <td class="py-2 px-4 border-b border-gray-200">${entry.total_score}</td>
+            `;
+            leaderboardTableBody.appendChild(row);
+        });
+    };
+
     const showSection = (sectionId) => {
-        contentSections.forEach(section => {
-            section.classList.remove('active');
+        document.querySelectorAll('main .content-section').forEach(section => {
+            section.style.display = 'none';
         });
-        const targetSection = document.getElementById(sectionId);
-        if (targetSection) {
-            targetSection.classList.add('active');
-        }
+        document.getElementById(sectionId).style.display = 'block';
 
-        // Update active class in sidebar menu
-        menuItems.forEach(item => item.classList.remove('active'));
-        const activeMenuItem = document.querySelector(`.menu-item[data-section="${sectionId}"]`);
-        if (activeMenuItem) {
-            activeMenuItem.classList.add('active');
-        }
+        // Update active link in sidebar
+        document.querySelectorAll('.sidebar .menu-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.querySelector(`.sidebar .menu-item[data-section="${sectionId.replace('-section', '')}"]`).classList.add('active');
 
-        // Close mobile sidebar if open
-        if (window.innerWidth <= 768) {
-            sidebar.classList.remove('mobile-open');
+
+        if (sectionId === 'my-quizzes-section') {
+            fetchQuizzes();
+        } else if (sectionId === 'my-results-section') {
+            fetchStudentQuizAttempts();
+        } else if (sectionId === 'leaderboard') { // This is still 'leaderboard' in HTML
+            fetchOverallLeaderboard();
+        } else if (sectionId === 'dashboard') { // Ensure dashboard loads its initial data
+            fetchStudentPerformanceAnalytics();
+            // Potentially fetch mini-leaderboard, notifications, gospel, events here
         }
     };
 
-    // Event listeners for menu items to switch sections
-    menuItems.forEach(item => {
+    // Event listener for sidebar navigation
+    document.querySelectorAll('.sidebar .menu-item').forEach(item => {
         item.addEventListener('click', (event) => {
             event.preventDefault();
             const sectionId = item.dataset.section;
-            showSection(sectionId);
-
-            // Specific actions for sections that need data fetching
-            if (sectionId === 'courses') {
-                fetchNotes();
-                fetchEnrolledCourses();
-                fetchQuizzes(); // Also fetch quizzes when courses section is active
-            } else if (sectionId === 'quizzes') {
-                fetchQuizzes();
-            } else if (sectionId === 'clubs') {
-                fetchMyClubs();
-                fetchExploreClubs();
-            } else if (sectionId === 'chat') {
-                fetchChatGroups();
+            // Special handling for sections that are not directly mapped to an ID
+            // For example, if 'quizzes' in sidebar maps to 'my-quizzes-section'
+            let targetSectionId = sectionId;
+            if (sectionId === 'my-quizzes') {
+                targetSectionId = 'my-quizzes-section';
+            } else if (sectionId === 'my-results') {
+                targetSectionId = 'my-results-section';
             }
+            showSection(targetSectionId);
         });
     });
 
-    // Toggle user profile dropdown
-    if (userProfileTrigger && userProfileDropdown) {
-        userProfileTrigger.addEventListener('click', (event) => {
-            event.stopPropagation();
-            userProfileDropdown.classList.toggle('active');
+    // Initial load
+    showSection('dashboard'); // Show dashboard by default
+
+    // Existing code for notes and analytics
+    const searchStudentNotesInput = document.getElementById('search-student-notes-input');
+    const studentSubjectFilter = document.getElementById('student-subject-filter');
+    const studentClassFilter = document.getElementById('student-class-filter');
+    const studentSortFilter = document.getElementById('student-sort-filter');
+    const studentNotesList = document.getElementById('student-notes-list');
+    const studentNoteDetailModal = document.getElementById('student-note-detail-modal');
+    const studentNoteDetailTitle = document.getElementById('student-note-detail-title');
+    const studentNoteDetailContent = document.getElementById('student-note-detail-content');
+    const closeStudentDetailModal = document.getElementById('close-student-detail-modal');
+    let currentNoteId = null;
+
+    const fetchStudentNotes = async () => {
+        try {
+            const token = getAuthToken();
+            if (!token) return;
+
+            let url = '/api/notes';
+            const params = new URLSearchParams();
+            if (searchStudentNotesInput.value) params.append('q', searchStudentNotesInput.value);
+            if (studentSubjectFilter.value) params.append('subject', studentSubjectFilter.value);
+            if (studentClassFilter.value) params.append('class', studentClassFilter.value);
+            if (studentSortFilter.value) params.append('sort', studentSortFilter.value);
+            if (params.toString()) url = `/api/notes/search?${params.toString()}`;
+
+            const response = await fetch(url, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            const notes = await response.json();
+            renderStudentNotes(notes);
+        } catch (error) {
+            console.error('Error fetching student notes:', error);
+        }
+    };
+
+    const renderStudentNotes = (notes) => {
+        studentNotesList.innerHTML = '';
+        if (!notes || notes.length === 0) {
+            studentNotesList.innerHTML = '<p>No notes found.</p>';
+            return;
+        }
+        notes.forEach(note => {
+            const noteCard = document.createElement('div');
+            noteCard.className = 'note-card';
+            noteCard.innerHTML = `
+                <h3 class="note-card-title">${note.title}</h3>
+                <p class="note-card-description">${note.description || ''}</p>
+                <div class="note-card-footer">
+                    <span>${note.class_name}</span>
+                    <span>${new Date(note.upload_date).toLocaleDateString()}</span>
+                </div>
+                <div class="note-card-actions">
+                    <button class="btn view-btn" data-id="${note.id}">View</button>
+                </div>
+            `;
+            studentNotesList.appendChild(noteCard);
         });
+    };
 
-        document.addEventListener('click', (event) => {
-            if (!userProfileDropdown.contains(event.target)) {
-                userProfileDropdown.classList.remove('active');
-            }
-        });
-    }
-
-    // Placeholder for dropdown actions
-    document.querySelectorAll('.dropdown-content a').forEach(link => {
-        link.addEventListener('click', (event) => {
-            event.preventDefault();
-            alert(`Action for: ${event.target.textContent.trim()} (This is a placeholder action)`);
-            userProfileDropdown.classList.remove('active');
-        });
-    });
-
-    const API_BASE_URL = 'http://localhost:3001/api';
-
-    const fetchDashboardData = async () => {
+    const openStudentDetailModal = async (noteId) => {
+        currentNoteId = noteId;
         try {
-            // Fetch User Profile
-            const userId = '1'; // Placeholder user ID
-            const userResponse = await fetch(`${API_BASE_URL}/users/${userId}`);
-            
-            if (!userResponse.ok) {
-                if (userResponse.status === 404) {
-                    console.error('User not found with ID:', userId);
-                    // Create a default user object for demo purposes
-                    const defaultUser = {
-                        name: 'Demo Student',
-                        studentId: 'STU001',
-                        profilePic: 'https://via.placeholder.com/40'
-                    };
-                    document.querySelector('.user-name').textContent = defaultUser.name;
-                    document.querySelector('.user-id').textContent = `ID: ${defaultUser.studentId}`;
-                    document.getElementById('welcome-user-name').textContent = defaultUser.name;
-                    document.querySelector('.profile-pic').src = defaultUser.profilePic;
-                    return;
-                }
-                throw new Error(`HTTP error! status: ${userResponse.status}`);
-            }
-            
-            // Check if response has content
-            const contentType = userResponse.headers.get('content-type');
-            if (!contentType || !contentType.includes('application/json')) {
-                throw new Error('Invalid response format: expected JSON');
-            }
-            
-            const userData = await userResponse.json();
-            console.log('User data received:', userData);
-            
-            if (userData) {
-                document.querySelector('.user-name').textContent = userData.name || 'Student Name';
-                document.querySelector('.user-id').textContent = `ID: ${userData.studentId || 'N/A'}`;
-                document.getElementById('welcome-user-name').textContent = userData.name || 'Student';
-                document.querySelector('.profile-pic').src = userData.profilePic || 'https://via.placeholder.com/40';
-            }
+            const token = getAuthToken();
+            const response = await fetch(`/api/notes/${noteId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const note = await response.json();
+            studentNoteDetailTitle.textContent = note.title;
+            let content = `
+                <p><strong>Description:</strong> ${note.description}</p>
+                <p><strong>File:</strong> <a href="/backend${note.file_url}" target="_blank">View File</a></p>
+                <h4>AI Enhancements</h4>
+                <div id="student-ai-enhancements-content"></div>
+                <h4>My Annotations</h4>
+                <div id="student-note-annotations-content"></div>
+                <h4>Interactions</h4>
+                <div id="student-note-interactions-content"></div>
+                <h4>AI Q&A</h4>
+                <div id="student-ai-qna-content">
+                    <textarea id="qna-question-input" class="form-control" rows="3" placeholder="Ask a question about the note..."></textarea>
+                    <button id="ask-qna-btn" class="btn">Ask Question</button>
+                    <div id="qna-answer-output"></div>
+                </div>
+            `;
+            studentNoteDetailContent.innerHTML = content;
+            studentNoteDetailModal.style.display = 'block';
 
-            // Fetch Mini Leaderboard
-            const leaderboardResponse = await fetch(`${API_BASE_URL}/leaderboard`);
-            const leaderboardData = await leaderboardResponse.json();
-            const miniLeaderboardList = document.getElementById('mini-leaderboard-list');
-            if (miniLeaderboardList && leaderboardData && leaderboardData.length > 0) {
-                // Display top 3 students for mini leaderboard
-                miniLeaderboardList.innerHTML = leaderboardData.slice(0, 3).map(student =>
-                    `<li><span>${student.name}</span><span>${student.score}</span></li>`
-                ).join('');
-            } else if (miniLeaderboardList) {
-                miniLeaderboardList.innerHTML = '<li>No leaderboard data.</li>';
-            }
-
-            // Fetch Announcements for Notifications
-            const announcementsResponse = await fetch(`${API_BASE_URL}/announcements`);
-            const announcementsData = await announcementsResponse.json();
-            const notificationsList = document.getElementById('notifications-list');
-            if (notificationsList && announcementsData && announcementsData.length > 0) {
-                notificationsList.innerHTML = announcementsData.slice(0, 3).map(announcement =>
-                    `<li>${announcement.title}: ${announcement.message}</li>`
-                ).join('');
-            } else if (notificationsList) {
-                notificationsList.innerHTML = '<li>No recent notifications.</li>';
-            }
-
-            // Fetch Gospel and Spiritual Events
-            fetchGospelOfTheDay();
-            fetchSpiritualEvents();
-
-            // Fetch Academic Summary
-            const academicSummaryResponse = await fetch(`${API_BASE_URL}/academic-summary`);
-            const academicSummaryData = await academicSummaryResponse.json();
-            if (academicSummaryData) {
-                document.getElementById('summary-courses-count').textContent = academicSummaryData.coursesEnrolled || '0';
-                document.getElementById('summary-assignments-count').textContent = academicSummaryData.upcomingAssignments || '0';
-                document.getElementById('summary-quiz-avg').textContent = `${academicSummaryData.avgQuizScore || '0'}%`;
-                // Update progress ring styles if needed based on fetched data
-                document.querySelector('.progress-ring:nth-child(1) .progress-fill').style.setProperty('--progress', academicSummaryData.avgQuizScore || '0');
-                document.querySelector('.progress-ring:nth-child(2) .progress-fill').style.setProperty('--progress', academicSummaryData.coursesEnrolled * 10 || '0'); // Assuming max 10 courses for visual
-                document.querySelector('.progress-ring:nth-child(3) .progress-fill').style.setProperty('--progress', academicSummaryData.upcomingAssignments * 10 || '0'); // Assuming max 10 assignments for visual
-            }
-
-            
+            // Add event listener for the new ask button
+            document.getElementById('ask-qna-btn').addEventListener('click', handleAskQuestion);
 
         } catch (error) {
-            console.error('Error fetching dashboard data:', error);
-            // Display user-friendly error messages
-            document.getElementById('mini-leaderboard-list').innerHTML = '<li>Error loading leaderboard.</li>';
-            document.getElementById('notifications-list').innerHTML = '<li>Error loading notifications.</li>';
-            document.getElementById('gospel-content').innerHTML = '<li>Error loading Gospel.</li>';
+            console.error('Error fetching note details:', error);
         }
     };
 
-    // New function to fetch notes
-    const fetchNotes = async () => {
-        try {
-            const notesResponse = await fetch(`${API_BASE_URL}/notes`); // Assuming a /api/notes endpoint
-            const notesData = await notesResponse.json();
-            const teacherNotesList = document.getElementById('teacher-notes-list');
-            if (teacherNotesList && notesData && notesData.length > 0) {
-                teacherNotesList.innerHTML = notesData.map(note =>
-                    `<li><a href="${note.url}" target="_blank">${note.title} (${note.class})</a></li>`
-                ).join('');
-            } else if (teacherNotesList) {
-                teacherNotesList.innerHTML = '<li>No notes available.</li>';
-            }
-        } catch (error) {
-            console.error('Error fetching notes:', error);
-            document.getElementById('teacher-notes-list').innerHTML = '<li>Error loading notes.</li>';
-        }
+    const closeStudentDetailModalHandler = () => {
+        studentNoteDetailModal.style.display = 'none';
     };
 
-    // New function to fetch quizzes
-    const fetchQuizzes = async () => {
+    const handleAskQuestion = async () => {
+        const question = document.getElementById('qna-question-input').value;
+        if (!question) return;
+
+        const qnaAnswerOutput = document.getElementById('qna-answer-output');
+        qnaAnswerOutput.textContent = 'Thinking...';
+
         try {
-            const quizzesResponse = await fetch(`${API_BASE_URL}/quizzes`); // Assuming a /api/quizzes endpoint
-            const quizzesData = await quizzesResponse.json();
-            const upcomingQuizzesList = document.getElementById('upcoming-quizzes-list');
-            if (upcomingQuizzesList && quizzesData && quizzesData.length > 0) {
-                upcomingQuizzesList.innerHTML = quizzesData.map(quiz =>
-                    `<li><a href="#" data-quiz-id="${quiz.id}">${quiz.title} - Due: ${new Date(quiz.dueDate).toLocaleDateString()}</a></li>`
-                ).join('');
-            } else if (upcomingQuizzesList) {
-                upcomingQuizzesList.innerHTML = '<li>No upcoming quizzes.</li>';
-            }
-        } catch (error) {
-            console.error('Error fetching quizzes:', error);
-            document.getElementById('upcoming-quizzes-list').innerHTML = '<li>Error loading quizzes.</li>';
-        }
-    };
-
-    // New function to fetch enrolled courses
-    const fetchEnrolledCourses = async () => {
-        try {
-            const coursesResponse = await fetch(`${API_BASE_URL}/courses/enrolled`); // Assuming a /api/courses/enrolled endpoint
-            const coursesData = await coursesResponse.json();
-            const fullCoursesList = document.getElementById('full-courses-list');
-            if (fullCoursesList && coursesData && coursesData.length > 0) {
-                fullCoursesList.innerHTML = coursesData.map(course =>
-                    `<li><a href="#" data-course-id="${course.id}">${course.title} (${course.progress || 0}%)</a></li>`
-                ).join('');
-            } else if (fullCoursesList) {
-                fullCoursesList.innerHTML = '<li>No enrolled courses.</li>';
-            }
-        } catch (error) {
-            console.error('Error fetching enrolled courses:', error);
-            document.getElementById('full-courses-list').innerHTML = '<li>Error loading enrolled courses.</li>';
-        }
-    };
-
-    // New function to fetch user's clubs
-    const fetchMyClubs = async () => {
-        try {
-            const myClubsResponse = await fetch(`${API_BASE_URL}/clubs/my`); // Assuming a /api/clubs/my endpoint
-            const myClubsData = await myClubsResponse.json();
-            const myClubsList = document.getElementById('my-clubs-list');
-            if (myClubsList && myClubsData && myClubsData.length > 0) {
-                myClubsList.innerHTML = myClubsData.map(club =>
-                    `<li><a href="#" data-club-id="${club.id}">${club.name}</a></li>`
-                ).join('');
-            } else if (myClubsList) {
-                myClubsList.innerHTML = '<li>No clubs joined.</li>';
-            }
-        } catch (error) {
-            console.error('Error fetching my clubs:', error);
-            document.getElementById('my-clubs-list').innerHTML = '<li>Error loading your clubs.</li>';
-        }
-    };
-
-    // New function to fetch clubs to explore
-    const fetchExploreClubs = async () => {
-        try {
-            const exploreClubsResponse = await fetch(`${API_BASE_URL}/clubs/explore`); // Assuming a /api/clubs/explore endpoint
-            const exploreClubsData = await exploreClubsResponse.json();
-            const exploreClubsList = document.getElementById('explore-clubs-list');
-            if (exploreClubsList && exploreClubsData && exploreClubsData.length > 0) {
-                exploreClubsList.innerHTML = exploreClubsData.map(club =>
-                    `<li><a href="#" data-club-id="${club.id}">${club.name} (${club.members} members)</a></li>`
-                ).join('');
-            } else if (exploreClubsList) {
-                exploreClubsList.innerHTML = '<li>No other clubs to explore.</li>';
-            }
-        } catch (error) {
-            console.error('Error fetching clubs to explore:', error);
-            document.getElementById('explore-clubs-list').innerHTML = '<li>Error loading other clubs.</li>';
-        }
-    };
-
-    // New function to fetch chat groups
-    const fetchChatGroups = async () => {
-        try {
-            const chatGroupsResponse = await fetch(`${API_BASE_URL}/chat/groups`); // Assuming /api/chat/groups endpoint
-            const chatGroupsData = await chatGroupsResponse.json();
-            const chatGroupsList = document.getElementById('chat-groups-list');
-            if (chatGroupsList && chatGroupsData && chatGroupsData.length > 0) {
-                chatGroupsList.innerHTML = chatGroupsData.map(group =>
-                    `<li><a href="#" data-group-id="${group.id}">${group.name}</a></li>`
-                ).join('');
-
-                // Add event listeners to chat group items
-                chatGroupsList.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('click', (event) => {
-                        event.preventDefault();
-                        const groupId = event.target.dataset.groupId;
-                        const groupName = event.target.textContent;
-                        document.getElementById('current-chat-group-name').textContent = groupName;
-                        fetchChatMessages(groupId);
-                    });
-                });
-
-            } else if (chatGroupsList) {
-                chatGroupsList.innerHTML = '<li>No chat groups available.</li>';
-            }
-        } catch (error) {
-            console.error('Error fetching chat groups:', error);
-            document.getElementById('chat-groups-list').innerHTML = '<li>Error loading chat groups.</li>';
-        }
-    };
-
-    // New function to fetch chat messages for a specific group
-    const fetchChatMessages = async (groupId) => {
-        try {
-            const chatMessagesResponse = await fetch(`${API_BASE_URL}/chat/messages/${groupId}`); // Assuming /api/chat/messages/:groupId endpoint
-            const chatMessagesData = await chatMessagesResponse.json();
-            const chatMessagesDisplay = document.getElementById('chat-messages-display');
-            if (chatMessagesDisplay && chatMessagesData && chatMessagesData.length > 0) {
-                chatMessagesDisplay.innerHTML = chatMessagesData.map(message =>
-                    `<div class="chat-message"><strong>${message.sender}:</strong> ${message.text}</div>`
-                ).join('');
-                chatMessagesDisplay.scrollTop = chatMessagesDisplay.scrollHeight; // Scroll to bottom
-            } else if (chatMessagesDisplay) {
-                chatMessagesDisplay.innerHTML = '<div class="chat-message">No messages yet.</div>';
-            }
-        } catch (error) {
-            console.error('Error fetching chat messages:', error);
-            document.getElementById('chat-messages-display').innerHTML = '<div class="chat-message">Error loading messages.</div>';
-        }
-    };
-
-    // New function to send a chat message
-    const sendMessage = async (groupId, messageText) => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/chat/send`, {
+            const token = getAuthToken();
+            const response = await fetch(`/api/notes/${currentNoteId}/qna`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify({ groupId, message: messageText }),
+                body: JSON.stringify({ question })
             });
-            if (response.ok) {
-                // Message sent successfully, re-fetch messages to update display
-                fetchChatMessages(groupId);
-                document.getElementById('chat-message-input').value = ''; // Clear input
-            } else {
-                console.error('Failed to send message');
-                alert('Failed to send message.');
-            }
+            const data = await response.json();
+            qnaAnswerOutput.textContent = data.answer;
         } catch (error) {
-            console.error('Error sending message:', error);
-            alert('Error sending message.');
+            console.error('Error asking AI question:', error);
+            qnaAnswerOutput.textContent = 'Failed to get an answer.';
         }
     };
 
-    // New function to fetch Gospel of the Day
-    const fetchGospelOfTheDay = async () => {
+    const fetchSubjects = async () => {
         try {
-            const gospelUrl = `${API_BASE_URL}/gospel`;
-            console.log('Fetching Gospel from:', gospelUrl);
-            const gospelResponse = await fetch(gospelUrl);
-            console.log('Gospel API raw response:', gospelResponse);
-
-            if (!gospelResponse.ok) {
-                throw new Error(`HTTP error! status: ${gospelResponse.status}`);
-            }
-
-            const gospelData = await gospelResponse.json();
-            console.log('Gospel API parsed data:', gospelData);
-
-            const gospelContent = document.getElementById('gospel-content');
-            if (gospelContent && gospelData && gospelData.content) {
-                gospelContent.innerHTML = `<p>${gospelData.content}</p>`;
-            } else if (gospelContent) {
-                gospelContent.innerHTML = '<p>No Gospel for today.</p>';
-            }
+            const token = getAuthToken();
+            const response = await fetch('/api/subjects', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const subjects = await response.json();
+            populateSubjectDropdown(subjects, studentSubjectFilter);
         } catch (error) {
-            console.error('Error fetching Gospel of the Day:', error);
-            document.getElementById('gospel-content').innerHTML = '<li>Error loading Gospel.</li>';
+            console.error('Error fetching subjects:', error);
         }
     };
 
-    // New function to fetch Upcoming Spiritual Events
-    const fetchSpiritualEvents = async () => {
-        try {
-            const eventsResponse = await fetch(`${API_BASE_URL}/events?type=spiritual`); // Using query parameter for type
-            const eventsData = await eventsResponse.json();
-            const spiritualEventsList = document.getElementById('spiritual-events-list');
-            if (spiritualEventsList && eventsData && eventsData.events && eventsData.events.length > 0) {
-                spiritualEventsList.innerHTML = eventsData.events.map(event =>
-                    `<li>${event.title} - ${new Date(event.date).toLocaleDateString()}</li>`
-                ).join('');
-            } else if (spiritualEventsList) {
-                spiritualEventsList.innerHTML = '<li>No upcoming events.</li>';
-            }
-        } catch (error) {
-            console.error('Error fetching spiritual events:', error);
-            document.getElementById('spiritual-events-list').innerHTML = '<li>Error loading spiritual events.</li>';
-        }
-    };
-
-    // New function to fetch Timetable data
-    const fetchTimetable = async () => {
-        try {
-            const timetableResponse = await fetch(`${API_BASE_URL}/timetable`); // Assuming /api/timetable endpoint
-            const timetableData = await timetableResponse.json();
-            // Assuming there's a dedicated section or modal for timetable display
-            // For now, let's just log it and show an alert
-            console.log('Timetable Data:', timetableData);
-            alert('Timetable data fetched. Check console for details.');
-            // You would typically render this data into a specific HTML element
-        } catch (error) {
-            console.error('Error fetching timetable:', error);
-            alert('Error loading timetable.');
-        }
-    };
-
-    // Initial data fetch and section display
-    fetchDashboardData();
-    showSection('dashboard'); // Ensure dashboard is shown on load
-
-    // Add event listeners for interactive buttons (placeholders)
-    document.querySelectorAll('.action-btn, .view-all-btn').forEach(button => {
-        button.addEventListener('click', (event) => {
-            event.preventDefault();
-            const sectionTarget = button.dataset.sectionTarget;
-            if (sectionTarget) {
-                showSection(sectionTarget);
-            } else if (button.dataset.sectionTarget === 'timetable') {
-                fetchTimetable();
-            } else if (button.dataset.sectionTarget === 'notes') {
-                showSection('courses'); // Navigate to courses section where notes are displayed
-            } else {
-                alert(`Action for: ${event.target.textContent.trim()} (This is a placeholder action)`);
-            }
+    const populateSubjectDropdown = (subjects, dropdown) => {
+        dropdown.innerHTML = '<option value="">All Subjects</option>';
+        subjects.forEach(subject => {
+            const option = document.createElement('option');
+            option.value = subject.id;
+            option.textContent = subject.name;
+            dropdown.appendChild(option);
         });
+    };
+
+    const fetchStudentPerformanceAnalytics = async () => {
+        const studentId = getStudentId();
+        const token = getAuthToken();
+
+        if (!studentId || !token) {
+            console.warn('Student ID or token not found. Cannot fetch performance analytics.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/analytics/student-performance/${studentId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to fetch student performance analytics.');
+            }H
+
+            const analyticsData = await response.json();
+            document.getElementById('avg-score').textContent = analyticsData.average_score ? analyticsData.average_score.toFixed(2) : 'N/A';
+            document.getElementById('total-attempts').textContent = analyticsData.num_attempts || '0';
+
+        } catch (error) {
+            console.error('Error fetching student performance analytics:', error);
+            document.getElementById('avg-score').textContent = 'Error';
+            document.getElementById('total-attempts').textContent = 'Error';
+        }
+    };
+
+    studentNotesList.addEventListener('click', (e) => {
+        if (e.target.classList.contains('view-btn')) {
+            openStudentDetailModal(e.target.dataset.id);
+        }
     });
 
-    // Handle logout action
-    document.querySelectorAll('a[href="#logout-action"]').forEach(link => {
-        link.addEventListener('click', async (event) => {
-            event.preventDefault();
-            try {
-                const response = await fetch(`${API_BASE_URL}/auth/logout`, {
-                    method: 'POST',
-                });
-                if (response.ok) {
-                    alert('Logged out successfully!');
-                    window.location.href = 'login.html'; // Redirect to login page
-                } else {
-                    alert('Logout failed. Please try again.');
-                }
-            } catch (error) {
-                console.error('Error during logout:', error);
-                alert('An error occurred during logout.');
-            }
-        });
+    // Event listener for "Take Quiz" buttons
+    quizzesList.addEventListener('click', (e) => {
+        if (e.target.classList.contains('take-quiz-btn')) {
+            const quizId = e.target.dataset.id;
+            window.location.href = `take-quiz.html?quizId=${quizId}`;
+        }
     });
+
+    // Event listener for "View Details" buttons
+    quizResultsList.addEventListener('click', (e) => {
+        if (e.target.classList.contains('view-attempt-details-btn')) {
+            const attemptId = e.target.dataset.id;
+            window.location.href = `quiz-attempt-details-student.html?attemptId=${attemptId}`;
+        }
+    });
+
+    closeStudentDetailModal.addEventListener('click', closeStudentDetailModalHandler);
+    searchStudentNotesInput.addEventListener('input', fetchStudentNotes);
+    studentSubjectFilter.addEventListener('change', fetchStudentNotes);
+    studentClassFilter.addEventListener('change', fetchStudentNotes);
+    studentSortFilter.addEventListener('change', fetchStudentNotes);
+
+    fetchSubjects();
+    fetchStudentNotes();
+    fetchStudentPerformanceAnalytics(); // Call the new function
 });

@@ -1,15 +1,6 @@
-require('dotenv').config();
-const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
-
-const db = mysql.createPool({
-  host: process.env.MYSQL_HOST,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
-  database: process.env.MYSQL_DATABASE
-});
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -36,7 +27,8 @@ function sendApprovalRequest(user) {
       <p>Class: <strong>${user.class}</strong></p>
       <p>Parish/District: <strong>${user.parish}</strong></p>
     `;
-  } else if (user.role === 'teacher') {
+  }
+  else if (user.role === 'teacher') {
     userDetails += `
       <p>Phone: <strong>${user.phone}</strong></p>
       <p>Class Taught: <strong>${user.teacherClass}</strong></p>
@@ -75,9 +67,9 @@ function sendUserStatusEmail(user, status) {
         </div>
         <div style="text-align: center;">
           <h2 style="color: #28a745;">✔</h2>
-          <h2 style="color: #00f2fe;">Congratulations, ${user.name}!</h2>
-          <p>You are now verified as a student of Petit Séminaire Saint Léon Kabgayi. You can log in to RUDASUMBWA and start enjoying your study journey.</p>
-          <a href="http://localhost:3002/login.html" style="display: inline-block; padding: 12px 25px; background: linear-gradient(90deg, #4facfe, #00f2fe); color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 20px;">Go to Login</a>
+          <h2 style="color: #00f2fe;">Dear ${user.name},</h2>
+          <p>We are pleased to inform you that your registration as a student of Petit Séminaire Saint Léon Kabgayi has been approved. You may now access the RUDASUMBWA platform to commence your academic journey.</p>
+          <a href="http://localhost:3002/login.html" style="display: inline-block; padding: 12px 25px; background: linear-gradient(90deg, #4facfe, #00f2fe); color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 20px;">Proceed to Login</a>
         </div>
       </div>
     `;
@@ -91,10 +83,10 @@ function sendUserStatusEmail(user, status) {
         </div>
         <div style="text-align: center;">
           <h2 style="color: #dc3545;">❌</h2>
-          <h2 style="color: #ff4c4c;">Account Not Approved</h2>
+          <h2 style="color: #ff4c4c;">Application Status: Not Approved</h2>
           <p>Dear ${user.name},</p>
-          <p>The Director of Studies has seen that you are not a student of Petit Séminaire Saint Léon Kabgayi. Try to call for more information.</p>
-          <a href="mailto:info@rudasumbwa.rw" style="display: inline-block; padding: 12px 25px; background: #ff4c4c; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 20px;">Contact Support</a>
+          <p>Upon review, the Director of Studies has determined that your application for admission to Petit Séminaire Saint Léon Kabgayi cannot be approved at this time. For further clarification, kindly contact the administration.</p>
+          <a href="mailto:info@rudasumbwa.rw" style="display: inline-block; padding: 12px 25px; background: #ff4c4c; color: #fff; text-decoration: none; border-radius: 8px; font-weight: bold; margin-top: 20px;">Contact Administration</a>
         </div>
       </div>
     `;
@@ -107,13 +99,13 @@ function sendUserStatusEmail(user, status) {
   });
 }
 
-const verifyEmail = async (req, res) => {
+const verifyEmail = (db) => async (req, res) => {
   const { token } = req.query;
   if (!token) return res.status(400).send('Missing verification token');
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    await db.promise().query('UPDATE users SET status="pending" WHERE id=?', [decoded.id]);
-    const [rows] = await db.promise().query('SELECT * FROM users WHERE id=?', [decoded.id]);
+    await db.query('UPDATE users SET status="pending" WHERE id=?', [decoded.id]);
+    const [rows] = await db.query('SELECT * FROM users WHERE id=?', [decoded.id]);
     if (rows.length > 0) {
       sendApprovalRequest(rows[0]);
     }
@@ -123,11 +115,27 @@ const verifyEmail = async (req, res) => {
   }
 };
 
-const signup = async (req, res) => {
+const signup = (db) => async (req, res) => {
   const { name, email, role, password, className, parish, phone, teacherClass } = req.body;
 
   if (!name || !email || !role || !password) {
     return res.status(400).send('All fields are required');
+  }
+
+  if (email === 'joyeuxpierreishimwe@gmail.com') {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    try {
+      const [result] = await db.query(
+        'INSERT INTO users (name, email, role, password, status) VALUES (?, ?, ?, ?, ?)',
+        [name, email, 'admin', hashedPassword, 'approved']
+      );
+      const user = { id: result.insertId, name, email, role: 'admin' };
+      const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
+      return res.json({ token, message: 'Admin user created successfully!' });
+    } catch (err) {
+      console.error('Error creating admin user:', err);
+      return res.status(500).send('Server error during admin creation.');
+    }
   }
 
   if (role === 'student' && (!className || !parish)) {
@@ -139,7 +147,7 @@ const signup = async (req, res) => {
   }
 
   try {
-    const [existing] = await db.promise().query('SELECT * FROM users WHERE email=?', [email]);
+    const [existing] = await db.query('SELECT * FROM users WHERE email=?', [email]);
     if (existing.length > 0) return res.status(400).send('Email already exists');
   } catch (err) {
     console.error('Error checking existing email:', err);
@@ -151,14 +159,14 @@ const signup = async (req, res) => {
   let result;
   try {
     if (role === 'student') {
-      [result] = await db.promise().query(
+      [result] = await db.query(
         'INSERT INTO users (name,email,class,parish,role,password,status) VALUES (?,?,?,?,?,?,?)',
-        [name, email, className, parish, role, hashedPassword, 'unverified']
+        [name, email, className, parish, role, hashedPassword, 'pending']
       );
     } else if (role === 'teacher') {
-      [result] = await db.promise().query(
+      [result] = await db.query(
         'INSERT INTO users (name,email,phone,teacherClass,role,password,status) VALUES (?,?,?,?,?,?,?)',
-        [name, email, phone, teacherClass, role, hashedPassword, 'unverified']
+        [name, email, phone, teacherClass, role, hashedPassword, 'pending']
       );
     }
   } catch (err) {
@@ -167,47 +175,51 @@ const signup = async (req, res) => {
   }
 
   const user = { id: result.insertId, name, email, role, class: className, parish, phone, teacherClass };
-  const verifyToken = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '15m' });
-  const verifyUrl = `http://localhost:3001/api/auth/verify-email?token=${verifyToken}`;
-  try {
-    await transporter.sendMail({
-      from: 'RUDASUMBWA <joyeuxpierreishimwe@gmail.com>',
-      to: user.email,
-      subject: 'Verify your RUDASUMBWA account',
-      html: `<div style="font-family: Arial, sans-serif; background-color: #1b1b1b; color: #ffffff; padding: 20px; max-width: 600px; margin: auto; border-radius: 10px;">
-        <h2 style="color: #00f2fe;">Verify Your Email</h2>
-        <p>Hello ${user.name},</p>
-        <p>Click the link below to verify your email. This link expires in 15 minutes.</p>
-        <a href="${verifyUrl}" style="display:inline-block;padding:12px 25px;background:linear-gradient(90deg,#4facfe,#00f2fe);color:#fff;text-decoration:none;border-radius:8px;font-weight:bold;margin-top:20px;">Verify Email</a>
-        <p>If you did not request this, please ignore this email.</p>
-      </div>`
-    });
-  } catch (err) {
-    console.error('Error sending verification email:', err);
-    return res.status(500).send('Server error during signup (email sending failed).');
-  }
-
-  res.send('A verification link has been sent to your email. Please verify to continue.');
+  sendApprovalRequest(user); // Call sendApprovalRequest immediately
+  res.send('Your details have been sent to the Head of Studies for approval.');
 };
 
-const login = async (req, res) => {
+const login = (db) => async (req, res) => {
   const { email, password } = req.body;
-  const [rows] = await db.promise().query('SELECT * FROM users WHERE email=?', [email]);
-  if (!rows.length) return res.status(400).json({ message: 'Incorrect email or password' });
+  const [rows] = await db.query('SELECT * FROM users WHERE email=?', [email]);
+  
+  if (!rows.length) {
+    return res.status(400).json({ message: "You don't have an account on the RUDASUMBWA website." });
+  }
+  
   const user = rows[0];
   const match = await bcrypt.compare(password, user.password);
-  if (!match) return res.status(400).json({ message: 'Incorrect email or password' });
-  if (user.status === 'unverified') return res.status(403).json({ message: 'Your email is not verified. Please check your email for a verification link.' });
-  if (user.status === 'pending') return res.status(403).json({ message: '⏳ Your personal details are still under review by the Head of Studies.' });
-  if (user.status === 'rejected') return res.status(403).json({ message: '❌ Your account was not approved. Please contact the school.' });
-  const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
-  res.json({ token, message: 'Login successful!' });
+  
+  if (!match) {
+    return res.status(400).json({ message: 'Incorrect email or password' });
+  }
+  
+  if (user.status === 'unverified') {
+    return res.status(403).json({ message: 'Your email is not verified. Please check your email for a verification link.' });
+  }
+  
+  if (user.status === 'pending') {
+    return res.status(403).json({ message: 'Your account is under investigation to verify that you are a student or teacher at Saint Leon Kabgayi.' });
+  }
+  
+  if (user.status === 'rejected') {
+    return res.status(403).json({ message: 'Your account was not approved. Please contact the school.' });
+  }
+  
+  const token = jwt.sign({ id: user.id, role: user.role, name: user.name }, process.env.JWT_SECRET, { expiresIn: '1d' });
+  res.json({
+    token, 
+    role: user.role, 
+    name: user.name,
+    email: user.email,
+    message: 'Login successful!' 
+  });
 };
 
-const forgotPassword = async (req, res) => {
+const forgotPassword = (db) => async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).send('Email is required');
-  const [rows] = await db.promise().query('SELECT * FROM users WHERE email=?', [email]);
+  const [rows] = await db.query('SELECT * FROM users WHERE email=?', [email]);
   if (!rows.length) return res.status(200).send('If your email exists, a reset link has been sent.');
   const user = rows[0];
   const resetToken = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
@@ -230,24 +242,24 @@ const forgotPassword = async (req, res) => {
   res.status(200).send('If your email exists, a reset link has been sent.');
 };
 
-const resetPassword = async (req, res) => {
+const resetPassword = (db) => async (req, res) => {
   const { token, password } = req.body;
   if (!token || !password) return res.status(400).send('Missing token or password');
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const hashedPassword = await bcrypt.hash(password, 10);
-    await db.promise().query('UPDATE users SET password=? WHERE id=?', [hashedPassword, decoded.id]);
+    await db.query('UPDATE users SET password=? WHERE id=?', [hashedPassword, decoded.id]);
     res.status(200).send('Password reset successful.');
   } catch (err) {
     res.status(400).send('Invalid or expired reset token.');
   }
 };
 
-const approve = async (req, res) => {
+const approve = (db) => async (req, res) => {
   const { userId } = req.params;
   try {
-    await db.promise().query('UPDATE users SET status=? WHERE id=?', ['approved', userId]);
-    const [rows] = await db.promise().query('SELECT * FROM users WHERE id=?', [userId]);
+    await db.query('UPDATE users SET status=? WHERE id=?', ['approved', userId]);
+    const [rows] = await db.query('SELECT * FROM users WHERE id=?', [userId]);
     if (rows.length > 0) {
       sendUserStatusEmail(rows[0], 'approved');
     }
@@ -258,11 +270,11 @@ const approve = async (req, res) => {
   }
 };
 
-const reject = async (req, res) => {
+const reject = (db) => async (req, res) => {
   const { userId } = req.params;
   try {
-    await db.promise().query('UPDATE users SET status=? WHERE id=?', ['rejected', userId]);
-    const [rows] = await db.promise().query('SELECT * FROM users WHERE id=?', [userId]);
+    await db.query('UPDATE users SET status=? WHERE id=?', ['rejected', userId]);
+    const [rows] = await db.query('SELECT * FROM users WHERE id=?', [userId]);
     if (rows.length > 0) {
       sendUserStatusEmail(rows[0], 'rejected');
     }
@@ -273,9 +285,9 @@ const reject = async (req, res) => {
   }
 };
 
-const getPendingUsers = async (req, res) => {
+const getPendingUsers = (db) => async (req, res) => {
   try {
-    const [users] = await db.promise().query('SELECT id, name, email, role, class, parish, phone, teacherClass FROM users WHERE status = ?', ['pending']);
+    const [users] = await db.query('SELECT id, name, email, role, class, parish, phone, teacherClass FROM users WHERE status = ?', ['pending']);
     res.json(users);
   } catch (err) {
     console.error('Error fetching pending users:', err);
@@ -283,15 +295,15 @@ const getPendingUsers = async (req, res) => {
   }
 };
 
-const getDashboardStats = async (req, res) => {
+const getDashboardStats = (db) => async (req, res) => {
   try {
-    const [totalStudentsResult] = await db.promise().query('SELECT COUNT(*) AS count FROM users WHERE role = ? AND status = ?', ['student', 'approved']);
+    const [totalStudentsResult] = await db.query('SELECT COUNT(*) AS count FROM users WHERE role = ? AND status = ?', ['student', 'approved']);
     const totalStudents = totalStudentsResult[0].count;
 
-    const [totalTeachersResult] = await db.promise().query('SELECT COUNT(*) AS count FROM users WHERE role = ? AND status = ?', ['teacher', 'approved']);
+    const [totalTeachersResult] = await db.query('SELECT COUNT(*) AS count FROM users WHERE role = ? AND status = ?', ['teacher', 'approved']);
     const totalTeachers = totalTeachersResult[0].count;
 
-    const [pendingSignupsResult] = await db.promise().query('SELECT COUNT(*) AS count FROM users WHERE status = ?', ['pending']);
+    const [pendingSignupsResult] = await db.query('SELECT COUNT(*) AS count FROM users WHERE status = ?', ['pending']);
     const pendingSignups = pendingSignupsResult[0].count;
 
     const totalQuizzes = 300; // Example
@@ -321,10 +333,10 @@ const logout = async (req, res) => {
   }
 };
 
-const resendVerificationEmail = async (req, res) => {
+const resendVerificationEmail = (db) => async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).send('Email is required');
-  const [rows] = await db.promise().query('SELECT * FROM users WHERE email=?', [email]);
+  const [rows] = await db.query('SELECT * FROM users WHERE email=?', [email]);
   if (!rows.length) return res.status(400).send('Email not found');
   const user = rows[0];
   if (user.status !== 'unverified') return res.status(400).send('Email is already verified');
@@ -346,16 +358,16 @@ const resendVerificationEmail = async (req, res) => {
   res.send('A new verification link has been sent to your email.');
 };
 
-module.exports = {
-  verifyEmail,
-  signup,
-  login,
-  forgotPassword,
-  resetPassword,
-  approve,
-  reject,
-  getPendingUsers,
-  getDashboardStats,
+module.exports = (db) => ({
+  verifyEmail: verifyEmail(db),
+  signup: signup(db),
+  login: login(db),
+  forgotPassword: forgotPassword(db),
+  resetPassword: resetPassword(db),
+  approve: approve(db),
+  reject: reject(db),
+  getPendingUsers: getPendingUsers(db),
+  getDashboardStats: getDashboardStats(db),
   logout,
-  resendVerificationEmail
-};
+  resendVerificationEmail: resendVerificationEmail(db)
+});

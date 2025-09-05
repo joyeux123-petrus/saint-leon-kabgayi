@@ -1,38 +1,46 @@
-// Subject management logic for admin.html
-document.addEventListener('DOMContentLoaded', function() {
-	const form = document.getElementById('create-subject-form');
-	const subjectsList = document.getElementById('subjects-list');
-	if (form && subjectsList) {
-		form.onsubmit = async function(e) {
-			e.preventDefault();
-			const name = document.getElementById('subject-name').value.trim();
-			if (!name) return;
-			const res = await fetch('/api/subjects', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ name })
-			});
-			const result = await res.json();
-			if (result.success) {
-				document.getElementById('subject-name').value = '';
-				loadSubjects();
-			} else {
-				alert(result.error || 'Failed to create subject.');
-			}
-		};
-		async function loadSubjects() {
-			const res = await fetch('/api/subjects');
-			const data = await res.json();
-			subjectsList.innerHTML = '';
-			(data.subjects || []).forEach(subj => {
-				const li = document.createElement('li');
-				li.textContent = subj.name;
-				subjectsList.appendChild(li);
-			});
-		}
-		loadSubjects();
-	}
+// Mobile menu toggle
+const mobileMenuButton = document.getElementById('mobile-menu-button');
+const mobileMenu = document.getElementById('mobile-menu');
+
+mobileMenuButton.addEventListener('click', () => {
+  mobileMenu.classList.toggle('hidden');
 });
-// Main JS for RUDASUMBWA
-console.log('RUDASUMBWA frontend loaded');
-// Add interactivity as needed for each page
+
+// Hero video carousel
+const videoFiles = [
+  'images/0.mp4',
+  'images/1.mp4',
+  'images/2.mp4',
+  'images/3.mp4',
+  'images/4.mp4'
+];
+let currentVideo = 0;
+const heroVideo = document.getElementById('heroVideo');
+
+function playNextVideo() {
+  if (heroVideo) {
+    heroVideo.src = videoFiles[currentVideo];
+    heroVideo.load();
+    const playPromise = heroVideo.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // Autoplay was prevented.
+        // We can try to play again after a user interaction.
+      });
+    }
+    currentVideo = (currentVideo + 1) % videoFiles.length;
+  }
+}
+
+if (heroVideo) {
+  heroVideo.addEventListener('ended', playNextVideo);
+  // Start with the first video
+  playNextVideo();
+
+  // Try to force autoplay on mobile after user gesture
+  document.body.addEventListener('touchstart', () => {
+    if (!heroVideo.playing) {
+      heroVideo.play();
+    }
+  }, { once: true });
+}

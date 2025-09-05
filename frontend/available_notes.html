@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Notes</title>
+    <link rel="stylesheet" href="styles/student_dashboard_new.css"> <!-- Reusing some styles -->
+    <link rel="stylesheet" href="styles/notes-card.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="student_dashboard_new.html" class="logo-container">
+                    <img src="images/logo.PNG" alt="School Logo" class="logo-img">
+                    <span class="school-name">Petit Seminaire Saint Leon Kabgayi</span>
+                </a>
+            </div>
+            <div class="nav-menu" id="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item"><a href="available_notes.html" class="nav-link">My Notes</a></li>
+                    <li class="nav-item"><a href="take-quiz.html" class="nav-link">Take Quiz</a></li>
+                    <li class="nav-item"><a href="quiz-attempts-student.html" class="nav-link">My Quizzes</a></li>
+                    <li class="nav-item"><a href="student-analytics.html" class="nav-link">My Analytics</a></li>
+                    <li class="nav-item"><a href="spiritual.html" class="nav-link">Spiritual</a></li>
+                    <li class="nav-item profile-dropdown-container">
+                        <button id="profile-dropdown-btn" class="profile-dropdown-btn">
+                            <i class="fas fa-user-circle profile-avatar-icon"></i>
+                            <span id="profile-name-nav">User</span>
+                            <i class="fas fa-caret-down"></i>
+                        </button>
+                        <div id="profile-dropdown-menu" class="profile-dropdown-menu">
+                            <a href="profile-settings.html" class="dropdown-item">Profile Settings</a>
+                            <a href="#" id="logout-btn" class="dropdown-item">Logout</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="nav-toggle" id="nav-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>Available Notes from Teachers</h1>
+        </div>
+        <div class="content-area">
+            
+            <!-- Notes will be loaded here dynamically -->
+            <div id="notes-list-container">
+                Loading available notes...
+            </div>
+            <button id="view-selected-notes-btn" class="btn" style="margin-top: 20px;">View Selected Notes</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const notesListContainer = document.getElementById('notes-list-container');
+            const viewSelectedNotesBtn = document.getElementById('view-selected-notes-btn');
+
+            const getAuthToken = () => localStorage.getItem('token');
+
+            async function fetchData(endpoint) {
+                const token = getAuthToken();
+                try {
+                    const response = await fetch(endpoint, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            console.error('Unauthorized: Token might be invalid or expired. Redirecting to login.');
+                            window.location.href = 'login.html';
+                        }
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return await response.json();
+                } catch (error) {
+                    console.error(`Error fetching from ${endpoint}:`, error);
+                    return null;
+                }
+            }
+
+            const renderNotes = async () => {
+                notesListContainer.innerHTML = '<p>Loading available notes...</p>';
+                const notes = await fetchData('/api/notes'); // Fetch all available notes
+
+                if (!notes || notes.length === 0) {
+                    notesListContainer.innerHTML = '<p>No notes available at this time.</p>';
+                    return;
+                }
+
+                notesListContainer.innerHTML = notes.map(note => {
+                    let imageUrl = 'images/placeholder-note.png'; // Default placeholder image
+                    if (note.media_url) {
+                        try {
+                            const mediaUrls = JSON.parse(note.media_url);
+                            const firstImage = mediaUrls.find(url => url.match(/\.(jpeg|jpg|gif|png|webp)$/i));
+                            if (firstImage) {
+                                imageUrl = firstImage;
+                            }
+                        } catch (e) {
+                            console.error("Error parsing media_url:", e);
+                        }
+                    }
+
+                    return `
+                        <div class="note-card">
+                            <div class="note-card-image-container">
+                                <img src="${imageUrl}" alt="Note Image" class="note-card-image">
+                            </div>
+                            <div class="note-card-content">
+                                <h4 class="note-card-title">${note.title}</h4>
+                                <p class="note-card-meta">Subject: <span>${note.subject_name || 'General'}</span></p>
+                                <p class="note-card-meta">Class: <span>${note.class_name || 'N/A'}</span></p>
+                                <p class="note-card-meta">Teacher: <span>${note.teacher_name || 'N/A'}</span></p>
+                                <button class="btn-view-note" data-note-id="${note.id}">View Note</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                document.querySelectorAll('.btn-view-note').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const noteId = event.currentTarget.dataset.noteId;
+                        window.location.href = `professional-notes-viewer.html?noteId=${noteId}`;
+                    });
+                });
+            };
+
+            // Initial render of notes
+            renderNotes();
+
+            // The "View Selected Notes" button functionality can be simplified or removed
+            // if notes are viewed individually. For now, it will just redirect.
+            viewSelectedNotesBtn.addEventListener('click', function() {
+                // This button's original purpose was for multi-selection, which is not implemented here.
+                // It can be repurposed or removed if not needed.
+                alert('Please click "View Note" on an individual note to view it.');
+            });
+        });
+    </script>
+</body>
+</html>

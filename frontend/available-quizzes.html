@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Quizzes</title>
+    <link rel="stylesheet" href="styles/student_dashboard_new.css"> <!-- Reusing some dashboard styles -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Basic styling for quizzes display */
+        .quizzes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .quiz-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease-in-out;
+        }
+        .quiz-card:hover {
+            transform: translateY(-5px);
+        }
+        .quiz-card h3 {
+            margin-top: 0;
+            color: #333;
+            font-size: 1.3em;
+        }
+        .quiz-card p {
+            color: #666;
+            font-size: 0.9em;
+            flex-grow: 1;
+            margin-bottom: 15px;
+        }
+        .quiz-card .quiz-meta {
+            font-size: 0.85em;
+            color: #999;
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .quiz-card .quiz-meta span {
+            display: flex;
+            align-items: center;
+        }
+        .quiz-card .quiz-meta i {
+            margin-right: 5px;
+            color: #5cb85c; /* Example color for icons */
+        }
+        .quiz-card .btn-take-quiz {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            margin-top: 15px;
+        }
+        .quiz-card .btn-take-quiz:hover {
+            background-color: #0056b3;
+        }
+        .content-area {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="student_dashboard_new.html" class="logo-container">
+                    <img src="images/logo.PNG" alt="School Logo" class="logo-img">
+                    <span class="school-name">Petit Seminaire Saint Leon Kabgayi</span>
+                </a>
+            </div>
+            <div class="nav-menu" id="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item"><a href="available_notes.html" class="nav-link">My Notes</a></li>
+                    <li class="nav-item"><a href="available-quizzes.html" class="nav-link">Take Quiz</a></li>
+                    <li class="nav-item"><a href="quiz-attempts-student.html" class="nav-link">My Quizzes</a></li>
+                    <li class="nav-item"><a href="student-analytics.html" class="nav-link">My Analytics</a></li>
+                    <li class="nav-item"><a href="spiritual.html" class="nav-link">Spiritual</a></li>
+                    <li class="nav-item profile-dropdown-container">
+                        <button id="profile-dropdown-btn" class="profile-dropdown-btn">
+                            <i class="fas fa-user-circle profile-avatar-icon"></i>
+                            <span id="profile-name-nav">User</span>
+                            <i class="fas fa-caret-down"></i>
+                        </button>
+                        <div id="profile-dropdown-menu" class="profile-dropdown-menu">
+                            <a href="profile-settings.html" class="dropdown-item">Profile Settings</a>
+                            <a href="#" id="logout-btn" class="dropdown-item">Logout</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="nav-toggle" id="nav-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>Available Quizzes</h1>
+        </div>
+        <div class="content-area">
+            <p>Select a quiz to begin your attempt.</p>
+            <div id="quizzes-list-container" class="quizzes-grid">
+                <!-- Quizzes will be loaded here dynamically -->
+                Loading available quizzes...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizzesListContainer = document.getElementById('quizzes-list-container');
+
+            // Function to fetch quizzes from the backend
+            async function fetchQuizzes() {
+                quizzesListContainer.innerHTML = 'Loading available quizzes...'; // Show loading message
+                try {
+                    // Assuming the authentication token is stored in localStorage
+                    const token = localStorage.getItem('token'); 
+                    if (!token) {
+                        quizzesListContainer.innerHTML = '<p>Please log in to view quizzes.</p>';
+                        // Optionally redirect to login page
+                        // window.location.href = 'login.html'; 
+                        return;
+                    }
+
+                    const response = await fetch('/api/quizzes', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}` 
+                        }
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            quizzesListContainer.innerHTML = '<p>Session expired or unauthorized. Please log in again.</p>';
+                            // Handle token expiration/unauthorized access
+                            // window.location.href = 'login.html'; 
+                        } else {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                    }
+
+                    const quizzes = await response.json();
+                    displayQuizzes(quizzes);
+
+                } catch (error) {
+                    console.error('Error fetching quizzes:', error);
+                    quizzesListContainer.innerHTML = `<p>Error loading quizzes: ${error.message}. Please try again later.</p>`;
+                }
+            }
+
+            // Function to display quizzes in the UI
+            function displayQuizzes(quizzes) {
+                quizzesListContainer.innerHTML = ''; // Clear loading message
+                if (quizzes.length === 0) {
+                    quizzesListContainer.innerHTML = '<p>No quizzes available at the moment.</p>';
+                    return;
+                }
+
+                quizzes.forEach(quiz => {
+                    const quizCard = document.createElement('div');
+                    quizCard.className = 'quiz-card';
+                    quizCard.innerHTML = `
+                        <h3>${quiz.title}</h3>
+                        <p>${quiz.description || 'No description available.'}</p>
+                        <div class="quiz-meta">
+                            <span><i class="fas fa-book"></i> Subject: ${quiz.subject_name || 'N/A'}</span>
+                            <span><i class="fas fa-chalkboard"></i> Class: ${quiz.class_name || 'N/A'}</span>
+                            <span><i class="fas fa-star"></i> Difficulty: ${quiz.difficulty || 'N/A'}</span>
+                            <span><i class="fas fa-clock"></i> Time Limit: ${quiz.time_limit ? quiz.time_limit + ' mins' : 'N/A'}</span>
+                        </div>
+                        <a href="take-quiz.html?quiz_id=${quiz.quiz_id || quiz.id}" class="btn-take-quiz">Take Quiz</a>
+                    `;
+                    quizzesListContainer.appendChild(quizCard);
+                });
+            }
+
+            // Fetch quizzes when the page loads
+            fetchQuizzes();
+        });
+    </script>
+</body>
+</html>

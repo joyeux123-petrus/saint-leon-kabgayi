@@ -309,13 +309,14 @@
       gap: 1rem;
       justify-content: center;
     }
-    .footer .footer-social img {
-      width: 28px;
-      height: 28px;
+    .footer .footer-social a {
+      color: #fff;
+      text-decoration: none;
       opacity: 0.8;
       transition: opacity 0.2s;
+      margin: 0 10px;
     }
-    .footer .footer-social img:hover {
+    .footer .footer-social a:hover {
       opacity: 1;
     }
     @media (max-width: 700px) {
@@ -324,20 +325,20 @@
         padding: 1rem 2vw; 
       }
       .navbar .logo {
-        font-size: 1.5rem; /* Smaller logo text */
+        font-size: 1.5rem;
       }
       .nav-links { 
-        gap: 0.5rem; /* Reduced gap */
-        flex-wrap: wrap; /* Allow wrapping */
-        justify-content: center; /* Center links */
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
         margin-top: 1rem;
       }
       .navbar .nav-links a, .navbar .nav-links .nav-btn {
-        font-size: 0.9rem; /* Smaller nav links */
-        padding: 0.5rem 1rem; /* Smaller padding */
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
       }
       .hero-heading { 
-        font-size: 1.8rem; /* Adjusted heading font size */
+        font-size: 1.8rem;
         padding: 0 1rem;
       }
       .hero-content { 
@@ -348,10 +349,10 @@
         font-size: 1rem;
       }
       .sections { 
-        padding: 1rem 1rem; /* Increased padding */
+        padding: 1rem 1rem;
       }
       .section-title {
-        font-size: 1.6rem; /* Adjusted section title */
+        font-size: 1.6rem;
       }
       .features-cards { 
         flex-direction: column; 
@@ -364,10 +365,10 @@
         font-size: 1rem;
       }
       .cta-section { 
-        padding: 2rem 1rem; /* Increased padding */
+        padding: 2rem 1rem;
       }
       .cta-title {
-        font-size: 1.6rem; /* Adjusted CTA title */
+        font-size: 1.6rem;
       }
       .cta-note {
         font-size: 0.9rem;
@@ -404,7 +405,7 @@
     </div>
   </nav>
   <section class="hero" id="hero">
-    <video id="heroVideo" class="hero-bg" autoplay muted loop playsinline poster="images/hero-bg.jpg"></video>
+    <div class="hero-bg" style="background: #174076;"></div>
     <div class="hero-content">
       <h1 class="hero-heading">Welcome to RUDASUMBWA - Paravi Lucernam Christo Meo</h1>
       <div class="hero-btns">
@@ -458,43 +459,15 @@
       <a href="signup.html">Sign Up</a>
     </div>
     <div class="footer-social">
-      <a href="#"><img src="images/instagram.png" alt="Instagram" /></a>
-      <a href="https://www.youtube.com/channel/UCSIsez6DQZR3XaxsPABEE-Q" target="_blank"><img src="images/youtube.png" alt="YouTube" /></a>
-      <a href="#"><img src="images/facebook.png" alt="Facebook" /></a>
+      <a href="#">Instagram</a>
+      <a href="https://www.youtube.com/channel/UCSIsez6DQZR3XaxsPABEE-Q" target="_blank">YouTube</a>
+      <a href="#">Facebook</a>
     </div>
     <div style="margin-top:1rem;font-size:0.95rem;">&copy; 2025 Petit Séminaire Saint Léon Kabgayi. All rights reserved.</div>
   </footer>
   <script>
-    // Hero video carousel
-    const videoFiles = [
-      'images/0.mp4',
-      'images/1.mp4',
-      'images/2.mp4',
-      'images/3.mp4',
-      'images/4.mp4'
-    ];
-    let currentVideo = 0;
-    const heroVideo = document.getElementById('heroVideo');
-    function playNextVideo() {
-      heroVideo.src = videoFiles[currentVideo];
-      heroVideo.load();
-      const playPromise = heroVideo.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Try to play again if autoplay fails
-          setTimeout(() => heroVideo.play(), 200);
-        });
-      }
-      currentVideo = (currentVideo + 1) % videoFiles.length;
-    }
-    heroVideo.addEventListener('ended', playNextVideo);
-    // Start with first video
-    playNextVideo();
-    // Try to force autoplay on mobile after user gesture
-    document.body.addEventListener('touchstart', () => {
-      heroVideo.play();
-    }, { once: true });
+    // Simplified version without video carousel
+    console.log("RUDASUMBWA website loaded successfully");
   </script>
-  <script src="js/redirect.js"></script>
 </body>
 </html>

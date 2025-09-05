@@ -4,355 +4,380 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - RUDASUMBWA</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <link rel="stylesheet" href="styles/admin-professional.css">
-        <style>
-            @media (max-width: 900px) {
-                .dashboard-container { flex-direction: column; }
-                .sidebar { position: fixed; left: -280px; top: 0; height: 100vh; z-index: 200; transition: left 0.3s; }
-                .sidebar.open { left: 0; }
-                .main-content { margin-left: 0; width: 100vw; }
-                .sidebar-toggle { display: block !important; }
-            }
-            @media (max-width: 600px) {
-                .dashboard-grid { grid-template-columns: 1fr !important; }
-                .stat-card { margin-bottom: 12px; }
-            }
-        </style>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles/admin-professional.css">
+    <link rel="stylesheet" href="styles/vatican-news.css">
 </head>
-<body>
-    <div class="dashboard-container">
-    <aside class="sidebar" id="adminSidebar">
-            <div class="sidebar-header">
-                <div class="logo-container">
-                    <img src="images/logo.PNG" alt="Logo" class="logo">
-                    <h2 class="logo-text">RUDASUMBWA</h2>
-                </div>
-                <button class="sidebar-toggle" id="adminSidebarToggle"><i class="fas fa-bars"></i></button>
-            </div>
-            <nav class="sidebar-nav">
-                <ul>
-                    <li class="sidebar-nav-item active"><a href="#" data-target="dashboard-overview"><i class="fas fa-tachometer-alt"></i><span>Dashboard Overview</span></a></li>
-                    <li class="sidebar-nav-item"><a href="#" data-target="user-management"><i class="fas fa-users-cog"></i><span>User Management</span></a></li>
-                    <li class="sidebar-nav-item"><a href="#" data-target="quiz-learning"><i class="fas fa-book-open"></i><span>Quiz & Learning</span></a></li>
-                    <li class="sidebar-nav-item"><a href="#" data-target="clubs-activities"><i class="fas fa-puzzle-piece"></i><span>Clubs & Activities</span></a></li>
-                    <li class="sidebar-nav-item"><a href="#" data-target="events-announcements"><i class="fas fa-calendar-alt"></i><span>Events & Announcements</span></a></li>
-                    <li class="sidebar-nav-item"><a href="#" data-target="leaderboard-performance"><i class="fas fa-chart-line"></i><span>Leaderboard & Performance</span></a></li>
-                    <li class="sidebar-nav-item"><a href="#" data-target="holy-gospel"><i class="fas fa-cross"></i><span>Holy Gospel Section</span></a></li>
-                    <li class="sidebar-nav-item"><a href="#" data-target="content-moderation"><i class="fas fa-shield-alt"></i><span>Content Moderation</span></a></li>
-                    <li class="sidebar-nav-item"><a href="#" data-target="system-settings"><i class="fas fa-cogs"></i><span>System Settings</span></a></li>
-                    <li class="sidebar-nav-item"><a href="#" data-target="reports-analytics"><i class="fas fa-chart-pie"></i><span>Reports & Analytics</span></a></li>
-                    <li class="sidebar-nav-item"><a href="#"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
-                </ul>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+
+    <div class="flex h-screen bg-gray-200">
+        <!-- Mobile menu button -->
+        <div class="md:hidden fixed top-0 left-0 z-20 p-4">
+            <button id="mobile-menu-button" class="text-gray-800 focus:outline-none">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="w-64 bg-gray-800 text-white p-5 space-y-6 md:relative fixed inset-y-0 left-0 transform -translate-x-full md:translate-x-0 transition duration-200 ease-in-out z-10">
+            <h2 class="text-2xl font-bold mb-10">Admin Panel</h2>
+            <nav>
+                <a href="#dashboard" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Dashboard</a>
+                <a href="#users" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">User Management</a>
+                <a href="#subjects" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Subjects</a>
+                <a href="#quizzes" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Quizzes</a>
+                <a href="#announcements" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Announcements</a>
+                <a href="#vatican-news-section" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Vatican News</a>
+                <a href="spiritual.html" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Spiritual</a>
+                <a href="#logout" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700">Logout</a>
             </nav>
-        </aside>
+        </div>
 
-    <main class="main-content">
-            <header class="header">
-                <div class="header-left">
-                    <div class="welcome-message">
-                        <h2>Welcome, Professor!</h2>
-                    </div>
-                </div>
-                <div class="header-right">
-                    <button class="icon-button"><i class="fas fa-bell"></i></button>
-                    <div class="user-profile-dropdown">
-                        <div class="user-profile">
-                            <img src="images/fanfare.png" alt="Profile Picture" class="profile-pic">
-                            <div class="user-info">
-                                <span class="user-name">Admin</span>
-                                <span class="user-id">ADM001</span>
-                            </div>
-                            <i class="fas fa-chevron-down dropdown-arrow"></i>
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-200 p-10">
+                <!-- Dashboard Section -->
+                <section id="dashboard">
+                    <h1 class="text-3xl font-bold mb-10">Dashboard</h1>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-white p-5 rounded-lg shadow">
+                            <h3 class="text-lg font-semibold text-gray-700">Total Users</h3>
+                            <p id="total-users" class="text-3xl font-bold">0</p>
                         </div>
-                        <div class="dropdown-content">
-                            <a href="#"><i class="fas fa-user-edit"></i>Edit Profile</a>
-                            <a href="#"><i class="fas fa-key"></i>Change Password</a>
-                            <a href="#"><i class="fas fa-sign-out-alt"></i>Logout</a>
+                        <div class="bg-white p-5 rounded-lg shadow">
+                            <h3 class="text-lg font-semibold text-gray-700">Pending Approvals</h3>
+                            <p id="pending-users" class="text-3xl font-bold">0</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-lg shadow">
+                            <h3 class="text-lg font-semibold text-gray-700">Total Subjects</h3>
+                            <p id="total-subjects" class="text-3xl font-bold">0</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-lg shadow">
+                            <h3 class="text-lg font-semibold text-gray-700">Total Quizzes</h3>
+                            <p id="total-quizzes" class="text-3xl font-bold">0</p>
                         </div>
                     </div>
-                </div>
-            </header>
+                </section>
 
-            <div class="content">
-                <!-- Dashboard Overview -->
-                <section id="dashboard-overview" class="content-section active">
-                    <div class="dashboard-grid">
-                        <div class="stat-card">
-                            <i class="fas fa-user-graduate stat-icon"></i>
-                            <span class="stat-number">1,250</span>
-                            <span class="stat-label">Total Students</span>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-chalkboard-teacher stat-icon"></i>
-                            <span class="stat-number">50</span>
-                            <span class="stat-label">Total Teachers</span>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-user-plus stat-icon"></i>
-                            <span class="stat-number">15</span>
-                            <span class="stat-label">Pending Sign-Ups</span>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-file-alt stat-icon"></i>
-                            <span class="stat-number">300</span>
-                            <span class="stat-label">Total Quizzes</span>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-users stat-icon"></i>
-                            <span class="stat-number">12</span>
-                            <span class="stat-label">Number of Clubs</span>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-calendar-check stat-icon"></i>
-                            <span class="stat-number">5</span>
-                            <span class="stat-label">Upcoming Events</span>
+                <!-- Vatican News Section -->
+                <section id="vatican-news-section" class="mt-10 hidden">
+                    <div class="bg-white p-5 rounded-lg shadow">
+                        <div id="vatican-news">
+                            <h2 class="text-2xl font-bold mb-5">Vatican News</h2>
+                            <ul id="news-list" class="list-disc list-inside"></ul>
                         </div>
                     </div>
-                    <div class="card">
-                        <h3>Recent Activities</h3>
-                        <div class="timeline-container">
-                            <div class="timeline-item">
-                                <div class="timeline-icon"><i class="fas fa-user-plus"></i></div>
-                                <div class="timeline-content">
-                                    <p><strong>New student signed up:</strong> John Doe</p>
-                                    <span class="timeline-time">2 hours ago</span>
+                </section>
+
+                <!-- User Management Section -->
+                <section id="users" class="mt-10 hidden">
+                    <h2 class="text-2xl font-bold mb-5">User Management</h2>
+                    <div class="bg-white p-5 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Pending User Approvals</h3>
+                        <table class="min-w-full bg-white">
+                            <thead class="bg-gray-800 text-white">
+                                <tr>
+                                    <th class="w-1/4 py-3 px-4 uppercase font-semibold text-sm">Name</th>
+                                    <th class="w-1/4 py-3 px-4 uppercase font-semibold text-sm">Email</th>
+                                    <th class="w-1/4 py-3 px-4 uppercase font-semibold text-sm">Role</th>
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pending-users-table-body" class="text-gray-700">
+                                <!-- JS will populate this -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-lg shadow mt-10">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">All Users</h3>
+                        <table class="min-w-full bg-white">
+                            <thead class="bg-gray-800 text-white">
+                                <tr>
+                                    <th class="w-1/5 py-3 px-4 uppercase font-semibold text-sm">Name</th>
+                                    <th class="w-1/5 py-3 px-4 uppercase font-semibold text-sm">Email</th>
+                                    <th class="w-1/5 py-3 px-4 uppercase font-semibold text-sm">Role</th>
+                                    <th class="w-1/5 py-3 px-4 uppercase font-semibold text-sm">Status</th>
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all-users-table-body" class="text-gray-700">
+                                <!-- JS will populate this -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Subject Management Section -->
+                <section id="subjects" class="mt-10 hidden">
+                    <h2 class="text-2xl font-bold mb-5">Subject Management</h2>
+                    <div class="bg-white p-5 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Create New Subject</h3>
+                        <form id="create-subject-form">
+                            <div class="flex flex-wrap -mx-3 mb-6">
+                                <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="subject-name">
+                                        Subject Name
+                                    </label>
+                                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" id="subject-name" type="text" placeholder="e.g., Mathematics">
+                                </div>
+                                <div class="w-full md:w-1/2 px-3">
+                                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="subject-description">
+                                        Description
+                                    </label>
+                                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="subject-description" type="text" placeholder="e.g., Core subject">
                                 </div>
                             </div>
-                            <div class="timeline-item">
-                                <div class="timeline-icon"><i class="fas fa-file-upload"></i></div>
-                                <div class="timeline-content">
-                                    <p><strong>New quiz created:</strong> Mathematics - Algebra</p>
-                                    <span class="timeline-time">5 hours ago</span>
-                                </div>
-                            </div>
-                             <div class="timeline-item">
-                                <div class="timeline-icon"><i class="fas fa-bullhorn"></i></div>
-                                <div class="timeline-content">
-                                    <p><strong>Announcement posted:</strong> School Assembly</p>
-                                    <span class="timeline-time">1 day ago</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- User Management -->
-                <section id="user-management" class="content-section">
-                    <div class="card">
-                        <h3>Pending Sign-Up Requests</h3>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Role</th>
-                                        <th>Details</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="pending-users-table-body">
-                                    <!-- User rows will be inserted here by JavaScript -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h3>All Users</h3>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Role</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="all-users-table-body">
-                                    <!-- User rows will be inserted here by JavaScript -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Quiz & Learning Management -->
-                <section id="quiz-learning" class="content-section">
-                    <div class="card">
-                        <h3>Quiz Management</h3>
-                        <button class="action-btn primary">Create Quiz</button>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Title</th>
-                                        <th>Subject</th>
-                                        <th>Teacher</th>
-                                        <th>Date Created</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Algebra Basics</td>
-                                        <td>Mathematics</td>
-                                        <td>Mr. Smith</td>
-                                        <td>2025-08-15</td>
-                                        <td>
-                                            <button class="action-btn secondary">Edit</button>
-                                            <button class="action-btn reject">Delete</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-                 <!-- Clubs & Activities -->
-                <section id="clubs-activities" class="content-section">
-                    <div class="card">
-                        <h3>Club Management</h3>
-                        <button class="action-btn primary">Create New Club</button>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Club Name</th>
-                                        <th>Leader</th>
-                                        <th>Members</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Debate Club</td>
-                                        <td>Alice</td>
-                                        <td>25</td>
-                                        <td>
-                                            <button class="action-btn secondary">Manage</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Events & Announcements -->
-                <section id="events-announcements" class="content-section">
-                    <div class="card">
-                        <h3>Events & Announcements</h3>
-                        <button class="action-btn primary">Create Event</button>
-                        <button class="action-btn secondary">Post Announcement</button>
-                    </div>
-                </section>
-
-                <!-- Leaderboard & Performance -->
-                <section id="leaderboard-performance" class="content-section">
-                    <div class="card">
-                        <h3>Student Leaderboard</h3>
-                        <div class="leaderboard-top-students">
-                            <div class="student-badge-card silver">
-                                <i class="fas fa-medal rank-icon"></i>
-                                <h4>Jane Smith</h4>
-                                <p>Rank 2</p>
-                            </div>
-                            <div class="student-badge-card gold">
-                                <i class="fas fa-trophy rank-icon"></i>
-                                <h4>John Doe</h4>
-                                <p>Rank 1</p>
-                            </div>
-                            <div class="student-badge-card bronze">
-                                <i class="fas fa-medal rank-icon"></i>
-                                <h4>Peter Jones</h4>
-                                <p>Rank 3</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Holy Gospel Section -->
-                <section id="holy-gospel" class="content-section">
-                    <div class="card">
-                        <h3>Holy Gospel Management</h3>
-                        <form>
-                            <textarea rows="10" placeholder="Enter Gospel text here..."></textarea>
-                            <button class="action-btn primary">Publish</button>
+                            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">
+                                Create Subject
+                            </button>
                         </form>
                     </div>
-                </section>
 
-                <!-- Content Moderation -->
-                <section id="content-moderation" class="content-section">
-                    <div class="card">
-                        <h3>Content Moderation</h3>
-                        <p>Review and moderate user-submitted content.</p>
+                    <div class="bg-white p-5 rounded-lg shadow mt-10">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">All Subjects</h3>
+                        <table class="min-w-full bg-white">
+                            <thead class="bg-gray-800 text-white">
+                                <tr>
+                                    <th class="w-1/3 py-3 px-4 uppercase font-semibold text-sm">Name</th>
+                                    <th class="w-1/2 py-3 px-4 uppercase font-semibold text-sm">Description</th>
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all-subjects-table-body" class="text-gray-700">
+                                <!-- JS will populate this -->
+                            </tbody>
+                        </table>
                     </div>
                 </section>
 
-                <!-- System Settings -->
-                <section id="system-settings" class="content-section">
-                    <div class="card">
-                        <h3>System Settings</h3>
-                        <div class="setting-item">
-                            <span>Dark Mode</span>
-                            <label class="toggle-switch">
-                                <input type="checkbox" checked>
-                                <span class="slider"></span>
-                            </label>
-                        </div>
-                        <div class="accordion">
-                            <div class="accordion-item">
-                                <div class="accordion-header">
-                                    <span>Email SMTP Settings</span>
-                                    <i class="fas fa-chevron-right"></i>
+                <!-- Quiz Management Section -->
+                <section id="quizzes" class="mt-10 hidden">
+                    <h2 class="text-2xl font-bold mb-5">Quiz Management</h2>
+                    <div class="bg-white p-5 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">All Quizzes</h3>
+                        <table class="min-w-full bg-white">
+                            <thead class="bg-gray-800 text-white">
+                                <tr>
+                                    <th class="w-1/3 py-3 px-4 uppercase font-semibold text-sm">Title</th>
+                                    <th class="w-1/3 py-3 px-4 uppercase font-semibold text-sm">Subject</th>
+                                    <th class="w-1/3 py-3 px-4 uppercase font-semibold text-sm">Created By</th>
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all-quizzes-table-body" class="text-gray-700">
+                                <!-- JS will populate this -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Announcement Management Section -->
+                <section id="announcements" class="mt-10 hidden">
+                    <h2 class="text-2xl font-bold mb-5">Announcement Management</h2>
+                    <div class="bg-white p-5 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Create New Announcement</h3>
+                        <form id="create-announcement-form">
+                            <div class="flex flex-wrap -mx-3 mb-6">
+                                <div class="w-full px-3 mb-6 md:mb-0">
+                                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="announcement-title">
+                                        Title
+                                    </label>
+                                    <input class="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" id="announcement-title" type="text" placeholder="e.g., Important Update">
                                 </div>
-                                <div class="accordion-content">
-                                    <p>Configure email settings here.</p>
+                                <div class="w-full px-3">
+                                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="announcement-content">
+                                        Content
+                                    </label>
+                                    <textarea class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500 h-32 resize-none" id="announcement-content" placeholder="e.g., We will be performing system maintenance..."></textarea>
                                 </div>
                             </div>
-                        </div>
+                            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" type="submit">
+                                Create Announcement
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-lg shadow mt-10">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">All Announcements</h3>
+                        <table class="min-w-full bg-white">
+                            <thead class="bg-gray-800 text-white">
+                                <tr>
+                                    <th class="w-1/4 py-3 px-4 uppercase font-semibold text-sm">Title</th>
+                                    <th class="w-1/2 py-3 px-4 uppercase font-semibold text-sm">Content</th>
+                                    <th class="w-1/6 py-3 px-4 uppercase font-semibold text-sm">Date</th>
+                                    <th class="py-3 px-4 uppercase font-semibold text-sm">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all-announcements-table-body" class="text-gray-700">
+                                <!-- JS will populate this -->
+                            </tbody>
+                        </table>
                     </div>
                 </section>
 
-                <!-- Reports & Analytics -->
-                <section id="reports-analytics" class="content-section">
-                    <div class="card">
-                        <h3>Reports & Analytics</h3>
-                        <div class="chart-container">
-                            <canvas id="user-report-chart"></canvas>
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </main>
+            </main>
         </div>
-        <script>
-            // Mobile sidebar toggle
-            const sidebar = document.getElementById('adminSidebar');
-            const toggleBtn = document.getElementById('adminSidebarToggle');
-            toggleBtn.addEventListener('click', function() {
-                sidebar.classList.toggle('open');
-            });
-            // Close sidebar when clicking outside (mobile)
-            document.addEventListener('click', function(e) {
-                if (window.innerWidth <= 900 && sidebar.classList.contains('open')) {
-                    if (!sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
-                        sidebar.classList.remove('open');
-                    }
-                }
-            });    
-            // Sidebar toggle function
-            function toggleSidebar() {
-                sidebar.classList.toggle('open');
-            }
-        </script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    </div>
+
     <script src="js/admin-dashboard.js"></script>
+    <script src="js/vatican-news.js"></script>
+
+    <!-- Edit User Modal -->
+    <div id="edit-user-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                        Edit User
+                    </h3>
+                    <div class="mt-2">
+                        <form id="edit-user-form">
+                            <input type="hidden" id="edit-user-id">
+                            <div class="mb-4">
+                                <label for="edit-user-name" class="block text-gray-700 text-sm font-bold mb-2">Name:</label>
+                                <input type="text" id="edit-user-name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                            <div class="mb-4">
+                                <label for="edit-user-email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
+                                <input type="email" id="edit-user-email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                            <div class="mb-4">
+                                <label for="edit-user-role" class="block text-gray-700 text-sm font-bold mb-2">Role:</label>
+                                <input type="text" id="edit-user-role" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" id="save-user-button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                        Save
+                    </button>
+                    <button type="button" id="cancel-user-button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Subject Modal -->
+    <div id="edit-subject-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                        Edit Subject
+                    </h3>
+                    <div class="mt-2">
+                        <form id="edit-subject-form">
+                            <input type="hidden" id="edit-subject-id">
+                            <div class="mb-4">
+                                <label for="edit-subject-name" class="block text-gray-700 text-sm font-bold mb-2">Name:</label>
+                                <input type="text" id="edit-subject-name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                            <div class="mb-4">
+                                <label for="edit-subject-description" class="block text-gray-700 text-sm font-bold mb-2">Description:</label>
+                                <input type="text" id="edit-subject-description" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" id="save-subject-button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                        Save
+                    </button>
+                    <button type="button" id="cancel-subject-button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Announcement Modal -->
+    <div id="edit-announcement-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                        Edit Announcement
+                    </h3>
+                    <div class="mt-2">
+                        <form id="edit-announcement-form">
+                            <input type="hidden" id="edit-announcement-id">
+                            <div class="mb-4">
+                                <label for="edit-announcement-title" class="block text-gray-700 text-sm font-bold mb-2">Title:</label>
+                                <input type="text" id="edit-announcement-title" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            </div>
+                            <div class="mb-4">
+                                <label for="edit-announcement-content" class="block text-gray-700 text-sm font-bold mb-2">Content:</label>
+                                <textarea id="edit-announcement-content" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-32 resize-none"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" id="save-announcement-button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                        Save
+                    </button>
+                    <button type="button" id="cancel-announcement-button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assign Subjects Modal -->
+    <div id="assign-subjects-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900" id="assign-subjects-modal-title">
+                        Assign Subjects to <span id="assign-subjects-teacher-name"></span>
+                    </h3>
+                    <div class="mt-2">
+                        <form id="assign-subjects-form">
+                            <input type="hidden" id="assign-subjects-teacher-id">
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Available Subjects:</label>
+                                <div id="subjects-checkbox-container" class="grid grid-cols-2 gap-2">
+                                    <!-- Subjects will be loaded here by JavaScript -->
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" id="save-assigned-subjects-button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                        Save Assignments
+                    </button>
+                    <button type="button" id="cancel-assigned-subjects-button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>

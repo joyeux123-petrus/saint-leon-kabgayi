@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Analytics - Teacher Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles/teacher-style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-inter">
+    <div class="flex h-screen">
+        
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-8">
+            <header class="flex justify-between items-center mb-6">
+                <h1 class="text-3xl font-bold text-gray-800">Student Analytics</h1>
+            </header>
+
+            <!-- Analytics Content -->
+            <section class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Engagement Overview</h2>
+                <div id="analytics-content" class="space-y-4">
+                    <p class="text-gray-500">Loading student engagement data...</p>
+                    <!-- Analytics data will be dynamically inserted here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/teacher-student-analytics.js"></script>
+</body>
+</html>

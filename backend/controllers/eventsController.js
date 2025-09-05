@@ -1,18 +1,11 @@
-const db = require('../models/db');
+const connectToDatabase = require('../db.js');
 
-exports.getAllEvents = async (req, res) => {
+const getAllEvents = async (req, res) => {
+  const db = await connectToDatabase();
   try {
-    const { type } = req.query;
-    let sql = 'SELECT id, title, description, date, venue FROM events WHERE date >= CURDATE()';
-    const params = [];
-
-    if (type) {
-      sql += ' AND type = ?';
-      params.push(type);
-    }
-
-    sql += ' ORDER BY date ASC';
-    const [events] = await db.query(sql, params);
+    let sql = 'SELECT id, title, description, event_date, created_at FROM events WHERE event_date >= CURDATE()';
+    sql += ' ORDER BY event_date ASC';
+    const [events] = await db.query(sql);
     res.json({ events });
   } catch (err) {
     console.error('Error fetching events:', err);
@@ -20,10 +13,11 @@ exports.getAllEvents = async (req, res) => {
   }
 };
 
-exports.createEvent = async (req, res) => {
-    const { title, description, date, venue, type } = req.body;
+const createEvent = async (req, res) => {
+    const db = await connectToDatabase();
+    const { title, description, event_date } = req.body;
     try {
-        await db.query('INSERT INTO events (title, description, date, venue, type) VALUES (?, ?, ?, ?, ?)', [title, description, date, venue, type]);
+        await db.query('INSERT INTO events (title, description, event_date) VALUES (?, ?, ?)', [title, description, event_date]);
         res.json({ message: 'Event created successfully.' });
     } catch (err) {
         console.error('Error creating event:', err);
@@ -32,10 +26,11 @@ exports.createEvent = async (req, res) => {
 };
 
 // Get event by ID
-exports.getEventById = async (req, res) => {
+const getEventById = async (req, res) => {
+  const db = await connectToDatabase();
   try {
     const { id } = req.params;
-    const [rows] = await db.query('SELECT * FROM events WHERE id = ?', [id]);
+    const [rows] = await db.query('SELECT id, title, description, event_date, created_at FROM events WHERE id = ?', [id]);
     if (rows.length === 0) {
       return res.status(404).json({ error: 'Event not found.' });
     }
@@ -47,11 +42,12 @@ exports.getEventById = async (req, res) => {
 };
 
 // Update event
-exports.updateEvent = async (req, res) => {
+const updateEvent = async (req, res) => {
+  const db = await connectToDatabase();
   try {
     const { id } = req.params;
-    const { title, description, date, venue, type } = req.body;
-    await db.query('UPDATE events SET title=?, description=?, date=?, venue=?, type=? WHERE id=?', [title, description, date, venue, type, id]);
+    const { title, description, event_date } = req.body;
+    await db.query('UPDATE events SET title=?, description=?, event_date=? WHERE id=?', [title, description, event_date, id]);
     res.json({ message: 'Event updated successfully.' });
   } catch (err) {
     console.error('Error updating event:', err);
@@ -60,7 +56,8 @@ exports.updateEvent = async (req, res) => {
 };
 
 // Delete event
-exports.deleteEvent = async (req, res) => {
+const deleteEvent = async (req, res) => {
+  const db = await connectToDatabase();
   try {
     const { id } = req.params;
     await db.query('DELETE FROM events WHERE id = ?', [id]);
@@ -72,7 +69,7 @@ exports.deleteEvent = async (req, res) => {
 };
 
 // Register for event
-exports.registerForEvent = async (req, res) => {
+const registerForEvent = async (req, res) => {
   try {
     // Example: add registration logic here
     res.json({ message: 'Registered for event.' });
@@ -81,3 +78,12 @@ exports.registerForEvent = async (req, res) => {
     res.status(500).json({ error: 'Failed to register for event.' });
   }
 };
+
+module.exports = {
+    getAllEvents,
+    createEvent,
+    getEventById,
+    updateEvent,
+    deleteEvent,
+    registerForEvent
+}

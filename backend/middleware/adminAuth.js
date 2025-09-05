@@ -2,7 +2,12 @@ const jwt = require('jsonwebtoken');
 
 const adminAuth = (req, res, next) => {
   // Get token from header
-  const token = req.header('x-auth-token');
+  const authHeader = req.header('Authorization'); // Change to Authorization header
+  if (!authHeader) {
+    return res.status(401).json({ msg: 'No token, authorization denied' });
+  }
+
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7, authHeader.length) : authHeader; // Extract token from "Bearer " string
 
   // Check if not token
   if (!token) {
@@ -14,7 +19,7 @@ const adminAuth = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
     // Check if user is admin
-    if (decoded.role !== 'admin') {
+    if (decoded.role.toLowerCase() !== 'admin') {
       return res.status(403).json({ msg: 'Access denied: Not an admin' });
     }
 

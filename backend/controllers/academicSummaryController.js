@@ -1,6 +1,6 @@
-const db = require('../db');
+const connectToDatabase = require('../db.js');
 
-exports.getAcademicSummary = async (req, res) => {
+const getAcademicSummary = async (req, res) => {
   try {
     // Placeholder data for now. In a real application, these would be fetched from the database.
     const academicSummary = {
@@ -16,16 +16,33 @@ exports.getAcademicSummary = async (req, res) => {
   }
 };
 
-exports.getUserAcademicSummary = async (req, res) => {
+const getUserAcademicSummary = async (req, res) => {
+  const db = await connectToDatabase();
   try {
     const userId = req.params.userId;
-    
-    // Placeholder data for now
+
+    // Fetch Average Quiz Score
+    const [avgScoreResult] = await db.query(
+      'SELECT AVG(score) as avg_score FROM quiz_attempts WHERE student_id = ? AND is_completed = TRUE',
+      [userId]
+    );
+    const avgQuizScore = avgScoreResult[0].avg_score ? parseFloat(avgScoreResult[0].avg_score).toFixed(2) : 0;
+
+    // Fetch Courses Enrolled (counting distinct subjects from quizzes attempted)
+    const [coursesEnrolledResult] = await db.query(
+      'SELECT COUNT(DISTINCT q.subject_id) as count FROM quiz_attempts qa JOIN quizzes q ON qa.quiz_id = q.id WHERE qa.student_id = ? AND qa.is_completed = TRUE',
+      [userId]
+    );
+    const coursesEnrolled = coursesEnrolledResult[0].count || 0;
+
+    // Upcoming Assignments (still a placeholder as no assignments table is evident)
+    const upcomingAssignments = 0; // Placeholder
+
     const userAcademicSummary = {
       userId: userId,
-      avgQuizScore: 78, // Placeholder
-      coursesEnrolled: 4, // Placeholder
-      upcomingAssignments: 2, // Placeholder
+      avgQuizScore: parseFloat(avgQuizScore),
+      coursesEnrolled: coursesEnrolled,
+      upcomingAssignments: upcomingAssignments,
     };
 
     res.json(userAcademicSummary);
@@ -35,7 +52,7 @@ exports.getUserAcademicSummary = async (req, res) => {
   }
 };
 
-exports.generateSummary = async (req, res) => {
+const generateSummary = async (req, res) => {
   try {
     // Placeholder for summary generation logic
     const generatedSummary = {
@@ -53,3 +70,9 @@ exports.generateSummary = async (req, res) => {
     res.status(500).json({ error: 'Failed to generate summary.' });
   }
 };
+
+module.exports = {
+    getAcademicSummary,
+    getUserAcademicSummary,
+    generateSummary
+}

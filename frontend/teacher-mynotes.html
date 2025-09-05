@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Notes - Teacher Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles/teacher-style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-inter">
+    <div class="h-screen">
+        <!-- Main Content -->
+        <main class="p-6 md:p-8">
+            <header class="flex justify-between items-center mb-6">
+                <h1 class="text-3xl font-bold text-gray-800">My Notes</h1>
+                <a href="teacher-note-editor.html" id="create-note-btn" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
+                    Create Note
+                </a>
+            </header>
+
+            <!-- Dashboard Stats -->
+            <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold text-gray-600">Total Notes</h3>
+                    <p id="total-notes" class="text-3xl font-bold text-gray-800">0</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold text-gray-600">Students Engaged</h3>
+                    <p id="students-engaged" class="text-3xl font-bold text-gray-800">0</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h3 class="text-lg font-semibold text-gray-600">Top Note</h3>
+                    <p id="top-notes" class="text-xl font-bold text-gray-800">N/A</p>
+                </div>
+            </section>
+
+            <!-- Notes Management -->
+            <section class="bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Notes Management</h2>
+                <div id="notes-list" class="space-y-4">
+                    <!-- Notes will be dynamically inserted here -->
+                    <p class="text-gray-500">No notes created yet. Click "Create Note" to get started.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Note Detail Modal -->
+    <div id="note-detail-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden" style="z-index: 1000;">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div class="flex justify-between items-center pb-3 border-b border-gray-200">
+                <h3 id="modal-note-title" class="text-2xl font-bold text-gray-800"></h3>
+                <button class="close-button text-gray-500 hover:text-gray-700 text-3xl leading-none font-semibold">&times;</button>
+            </div>
+            <div id="modal-note-content" class="mt-4 text-gray-700 prose max-w-none">
+                <!-- Note content will be loaded here -->
+            </div>
+            <div class="mt-4 flex justify-end">
+                <button class="close-button bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Tutor Chat Widget -->
+    <div id="ai-tutor-chat" class="ai-tutor-chat">
+        <div class="chat-header">
+            <h3>AI Tutor Peter</h3>
+            <button id="test-gemini-btn" class="chat-action-btn">
+                <i class="ri-test-tube-line"></i>
+            </button>
+            <button id="view-progress-btn" class="chat-action-btn">
+                <i class="ri-line-chart-line"></i>
+            </button>
+            <button id="chat-toggle" class="chat-toggle">
+                <i class="ri-chat-3-line"></i>
+            </button>
+        </div>
+        <div class="chat-body">
+            <div class="chat-messages" id="chat-messages">
+                <div class="message ai-message">
+                    <div class="message-content">
+                        <p>Hello! I'm Peter, your AI tutor. How can I help you with teaching and creating content today?</p>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chat-input-field" placeholder="Ask me anything about teaching, notes, or quizzes...">
+                <button id="chat-send-btn">
+                    <i class="ri-send-plane-fill"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/teacher-mynotes-display.js"></script>
+    <script src="js/ai-tutor.js"></script>
+</body>
+</html>

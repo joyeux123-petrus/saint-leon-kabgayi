@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Note Editor - Teacher Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles/teacher-style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 font-inter">
+    <div class="flex h-screen">
+        
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-8 overflow-y-auto">
+            <header class="flex justify-between items-center mb-6">
+                <h1 id="editor-title" class="text-3xl font-bold text-gray-800">Create Note</h1>
+                <div class="flex space-x-4">
+                    <a href="teacher-mynotes.html" class="px-6 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100">Cancel</a>
+                    <button type="submit" form="note-form" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save Note</button>
+                </div>
+            </header>
+
+            <form id="note-form" class="bg-white p-8 rounded-lg shadow-md space-y-8">
+                <input type="hidden" id="note-id">
+                
+                <!-- Note Metadata -->
+                <div>
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Note Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="note-title" class="block text-gray-700 font-semibold mb-2">Note Title</label>
+                            <input type="text" id="note-title" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        </div>
+                        <div>
+                            <label for="note-subject" class="block text-gray-700 font-semibold mb-2">Subject</label>
+                            <select id="note-subject" class="w-full px-4 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <!-- Subjects will be populated here -->
+                            </select>
+                        </div>
+                        <div class="md:col-span-3">
+                            <label for="note-description" class="block text-gray-700 font-semibold mb-2">Description</label>
+                            <textarea id="note-description" rows="3" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        </div>                    
+                        <div>
+                            <label for="note-visibility" class="block text-gray-700 font-semibold mb-2">Visibility</label>
+                            <select id="note-visibility" class="w-full px-4 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="private">Private (Only you)</option>
+                                <option value="public">Public (All students)</option>
+                                <option value="class">Specific Class</option>
+                            </select>
+                            <input type="text" id="note-class-name" class="w-full mt-2 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 hidden" placeholder="Enter class name (e.g., Senior 1)">
+                        </div>
+                        <div>
+                            <label for="note-tags" class="block text-gray-700 font-semibold mb-2">Tags/Keywords</label>
+                            <input type="text" id="note-tags" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. biology, cells, dna">
+                        </div>
+                        <div>
+                            <label for="note-estimated-duration" class="block text-gray-700 font-semibold mb-2">Estimated Duration (mins)</label>
+                            <input type="number" id="note-estimated-duration" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Publishing Options -->
+                <div class="border-t pt-8">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Publishing Options</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="note-status" class="block text-gray-700 font-semibold mb-2">Status</label>
+                            <select id="note-status" class="w-full px-4 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="draft">Save as Draft</option>
+                                <option value="published">Publish Now</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="note-publish-at" class="block text-gray-700 font-semibold mb-2">Schedule Publish Date</label>
+                            <input type="datetime-local" id="note-publish-at" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="note-expires-at" class="block text-gray-700 font-semibold mb-2">Set Expiry Date</label>
+                            <input type="datetime-local" id="note-expires-at" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sections Container -->
+                <div class="border-t pt-8">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-gray-800">Sections</h3>
+                        <button type="button" id="add-section-btn" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                            Add Section
+                        </button>
+                    </div>
+                    <div id="sections-container" class="space-y-6">
+                        <!-- Note sections will be dynamically inserted here -->
+                    </div>
+                </div>
+
+                <!-- AI Assistance -->
+                <div class="border-t pt-8">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">AI Assistance</h3>
+                    <div class="flex space-x-4">
+                        <button type="button" id="ai-summarize" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"><i class="fas fa-robot mr-2"></i>Auto-generate Summary</button>
+                        <button type="button" id="ai-flashcards" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"><i class="fas fa-robot mr-2"></i>Suggest Flashcards</button>
+                        <button type="button" id="ai-questions" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"><i class="fas fa-robot mr-2"></i>Generate Practice Questions</button>
+                        <button type="button" id="ai-translate" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"><i class="fas fa-robot mr-2"></i>Translate Notes</button>
+                    </div>
+                </div>
+
+                <!-- Collaboration -->
+                <div class="border-t pt-8">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Collaboration</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="share-with-teachers" class="block text-gray-700 font-semibold mb-2">Share with other teachers (co-editing)</label>
+                            <input type="text" id="share-with-teachers" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter teacher emails, separated by commas">
+                        </div>
+                        <div>
+                            <label for="student-suggestions" class="block text-gray-700 font-semibold mb-2">Allow students to suggest edits or questions</label>
+                            <select id="student-suggestions" class="w-full px-4 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="disabled">Disabled</option>
+                                <option value="enabled">Enabled</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gamification -->
+                <div class="border-t pt-8">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Gamification</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="points-per-section" class="block text-gray-700 font-semibold mb-2">Points for reading a section</label>
+                            <input type="number" id="points-per-section" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" min="0">
+                        </div>
+                        <div>
+                            <label for="badge-for-completion" class="block text-gray-700 font-semibold mb-2">Badge for completing the note</label>
+                            <input type="text" id="badge-for-completion" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Cell Biology Master">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Discussion Controls -->
+                <div class="border-t pt-8">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Discussion Controls</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="student-comments" class="block text-gray-700 font-semibold mb-2">Enable/Disable student comments</label>
+                            <select id="student-comments" class="w-full px-4 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="enabled">Enabled</option>
+                                <option value="disabled">Disabled</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="student-annotations" class="block text-gray-700 font-semibold mb-2">Enable/Disable student annotations</label>
+                            <select id="student-annotations" class="w-full px-4 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="enabled">Enabled</option>
+                                <option value="disabled">Disabled</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="student-qa" class="block text-gray-700 font-semibold mb-2">Enable/Disable Q&A feature</label>
+                            <select id="student-qa" class="w-full px-4 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="enabled">Enabled</option>
+                                <option value="disabled">Disabled</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <!-- Template for a single section -->
+    <template id="section-template">
+        <div class="section-item border p-4 rounded-lg bg-gray-50 space-y-4">
+            <div class="flex justify-between items-center">
+                <h4 class="text-lg font-semibold text-gray-600">New Section</h4>
+                <div>
+                    <button type="button" class="move-section-up-btn text-gray-500 hover:text-blue-600 p-1" title="Move Up">▲</button>
+                    <button type="button" class="move-section-down-btn text-gray-500 hover:text-blue-600 p-1" title="Move Down">▼</button>
+                    <button type="button" class="delete-section-btn text-red-500 hover:text-red-700 font-bold p-1" title="Delete Section">✕</button>
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Section Title</label>
+                <input type="text" class="section-title w-full mt-1 px-3 py-2 border rounded-md" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Section Content (Rich Text)</label>
+                <textarea rows="5" class="section-content w-full mt-1 px-3 py-2 border rounded-md" placeholder="Use a rich text editor here for formatting, images, and embedded links."></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Attachments</label>
+                    <input type="file" class="section-attachments w-full mt-1 text-sm" multiple>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Estimated Time (mins)</label>
+                    <input type="number" class="section-time w-full mt-1 px-3 py-2 border rounded-md" min="0">
+                </div>
+            </div>
+            
+            <!-- Knowledge Check Container -->
+            <div class="knowledge-check-wrapper border-t pt-4 mt-4">
+                <div class="flex justify-between items-center">
+                    <h5 class="font-semibold text-gray-700">Knowledge Check</h5>
+                    <div class="relative inline-block text-left">
+                        <div>
+                            <button type="button" class="add-question-dropdown-toggle inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Add Question
+                                <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                                                <div class="add-question-menu origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden">
+                            <div class="py-1" role="menu" aria-orientation="vertical">
+                                <a href="#" class="add-question-btn block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-type="MCQ">Multiple Choice</a>
+                                <a href="#" class="add-question-btn block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-type="True/False">True/False</a>
+                                <a href="#" class="add-question-btn block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-type="ShortAnswer">Short Answer</a>
+                                <a href="#" class="add-question-btn block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-type="FillInTheBlanks">Fill in the Blanks</a>
+                                <a href="#" class="add-question-btn block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" data-type="Matching">Matching</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="knowledge-check-container space-y-3 mt-3">
+                    <!-- Questions will be added here -->
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Template for a knowledge check question -->
+    <template id="question-template">
+        <div class="question-item border-l-4 border-blue-300 pl-3 py-2 bg-white space-y-2">
+            <div class="flex justify-between items-center">
+                <select class="question-type p-1 border rounded-md text-sm">
+                    <option value="MCQ">Multiple Choice</option>
+                    <option value="True/False">True/False</option>
+                    <option value="ShortAnswer">Short Answer</option>
+                    <option value="FillInTheBlanks">Fill in the Blanks</option>
+                    <option value="Matching">Matching</option>
+                </select>
+                <button type="button" class="delete-question-btn text-red-400 hover:text-red-600 text-xs font-bold">Remove</button>
+            </div>
+            <textarea placeholder="Question Text" class="question-text w-full p-1 border rounded-md text-sm" rows="2" required></textarea>
+            
+            <div class="options-container mt-1 space-y-1">
+                <!-- Options for MCQ will be added here -->
+            </div>
+            <button type="button" class="add-option-btn mt-1 text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded hover:bg-gray-200">Add Option</button>
+            
+            <textarea placeholder="Explanation (shown after student answers)" class="question-explanation w-full p-1 border rounded-.md text-sm" rows="1"></textarea>
+        </div>
+    </template>
+
+    <!-- Template for an MCQ option -->
+    <template id="option-template">
+        <div class="option-item flex items-center space-x-2">
+            <input type="radio" name="correct-option-group" class="correct-option-radio h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+            <input type="text" placeholder="Option text" class="option-text flex-grow p-1 border rounded-md text-sm" required>
+            <button type="button" class="delete-option-btn text-red-400 hover:text-red-600 text-xs">✕</button>
+        </div>
+    </template>
+
+    <!-- Template for a Matching question pair -->
+    <template id="matching-pair-template">
+        <div class="matching-pair-item flex items-center space-x-2">
+            <input type="text" placeholder="Term" class="matching-term flex-grow p-1 border rounded-md text-sm" required>
+            <span>=</span>
+            <input type="text" placeholder="Definition" class="matching-definition flex-grow p-1 border rounded-md text-sm" required>
+            <button type="button" class="delete-matching-pair-btn text-red-400 hover:text-red-600 text-xs">✕</button>
+        </div>
+    </template>
+
+    <!-- Template for a Fill-in-the-Blanks question -->
+    <template id="fill-in-the-blanks-template">
+        <div class="fill-in-the-blanks-item">
+            <p class="text-sm text-gray-600">Enter the text with blanks denoted by underscores (e.g., The capital of France is ___).</p>
+        </div>
+    </template>
+
+    <!-- Template for a generic correct answer input -->
+    <template id="correct-answer-template">
+        <div class="correct-answer-item mt-1">
+            <label class="block text-sm font-medium text-gray-700">Correct Answer</label>
+            <input type="text" class="correct-answer-input w-full mt-1 px-3 py-2 border rounded-md" placeholder="Enter the correct answer">
+        </div>
+    </template>
+
+    <script src="js/teacher-note-editor.js"></script>
+</body>
+</html>

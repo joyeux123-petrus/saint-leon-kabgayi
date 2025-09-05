@@ -1,12 +1,13 @@
-const db = require('../models/db');
+const db = require('../db');
 
 exports.listLectiones = async (req, res) => {
-  // ...fetch lectiones from DB...
-  res.json({ lectiones: [
-    { id: 1, title: 'Math Notes', type: 'note', content: 'Algebra basics PDF' },
-    { id: 2, title: 'Physics Video', type: 'video', content: 'Newton Laws Video' },
-    { id: 3, title: 'Brain Wave Exercise', type: 'exercise', content: 'Critical thinking challenge' }
-  ] });
+  try {
+    const [lectiones] = await db.promise().query('SELECT id, title, type, content FROM lectiones ORDER BY created_at DESC');
+    res.json({ lectiones });
+  } catch (err) {
+    console.error('Error fetching lectiones:', err);
+    res.status(500).json({ error: 'Failed to fetch lectiones.' });
+  }
 };
 
 exports.createLectiones = async (req, res) => {

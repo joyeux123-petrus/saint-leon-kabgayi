@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Create Your RUDASUMBWA Account</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="core.css">
+  <link rel="stylesheet" href="styles/core.css">
   <style>
     body { background: linear-gradient(120deg, #e3f0ff 0%, #f8fbff 100%); font-family: 'Inter', Arial, sans-serif; margin: 0; }
     .container { max-width: 420px; margin: 6rem auto 2rem auto; padding: 2rem; background: rgba(255,255,255,0.85); border-radius: 1.5rem; box-shadow: 0 2px 16px #17407622; }
@@ -72,6 +72,11 @@
       <div id="passwordStrength" style="margin-bottom:1rem; font-size:0.95rem; color:#174076; background:#e3f0ff; border-radius:0.5rem; padding:0.5rem; display:none;"></div>
       <label for="confirmPassword">Confirm Password</label>
       <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+      <div class="checkbox">
+        <input type="checkbox" id="showPasswordSignup">
+        <label for="showPasswordSignup">Show Password</label>
+      </div>
+      
       <div id="captchaBox" style="margin-bottom:1rem;">
         <span id="captchaQuestion" style="font-weight:bold;color:#174076;"></span>
         <input type="text" id="captchaAnswer" name="captchaAnswer" placeholder="Enter answer" style="margin-top:0.5rem;" required>
@@ -101,8 +106,12 @@
       function generateCaptcha() {
         const a = Math.floor(Math.random() * 10) + 1;
         const b = Math.floor(Math.random() * 10) + 1;
-        document.getElementById('captchaQuestion').textContent = `What is ${a} + ${b}?`;
-        document.getElementById('captchaBox').dataset.answer = (a + b).toString();
+        const captchaQuestionElement = document.getElementById('captchaQuestion');
+        const captchaBoxElement = document.getElementById('captchaBox');
+        captchaQuestionElement.textContent = `What is ${a} + ${b}?`;
+        captchaBoxElement.dataset.answer = (a + b).toString();
+        captchaBoxElement.style.display = 'block'; // Ensure the captcha box is visible
+        captchaQuestionElement.style.display = 'block'; // Ensure the question is visible
       }
       generateCaptcha();
 
@@ -135,6 +144,19 @@
           passwordStrength.style.color = score >= 4 ? '#008000' : (score === 3 ? '#e6b800' : '#ff4c4c');
         }
       });
+
+      document.getElementById('showPasswordSignup').onclick = function() {
+        var passwordInput = document.getElementById('password'); // Assuming 'password' is the ID of the password input
+        var confirmPasswordInput = document.getElementById('confirmPassword'); // Assuming 'confirmPassword' is the ID of the confirm password input
+
+        if (this.checked) {
+          passwordInput.type = 'text';
+          confirmPasswordInput.type = 'text';
+        } else {
+          passwordInput.type = 'password';
+          confirmPasswordInput.type = 'password';
+        }
+      };
 
     studentBtn.onclick = function() {
       studentBtn.classList.add('selected');
@@ -179,19 +201,15 @@
       const terms = document.getElementById('terms').checked;
       const message = document.getElementById('message');
       const infoMessage = document.getElementById('infoMessage');
-        const captchaInput = document.getElementById('captchaAnswer').value.trim();
-        const captchaCorrect = document.getElementById('captchaBox').dataset.answer;
+
+      
+      message.style.display = 'none';
+      infoMessage.style.display = 'none';
       
       message.style.display = 'none';
       infoMessage.style.display = 'none';
 
-        if (captchaInput !== captchaCorrect) {
-          message.textContent = 'Incorrect CAPTCHA answer. Please try again.';
-          message.style.display = 'block';
-          generateCaptcha();
-          document.getElementById('captchaAnswer').value = '';
-          return;
-        }
+        
 
         // Password strength check before submit
         let score = 0;
@@ -244,16 +262,20 @@
       
       // Submit to backend
       try {
-        const res = await fetch('/api/auth/signup', {
+        const res = await fetch('http://localhost:3001/api/auth/signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(submissionData)
         });
         const text = await res.text();
         if (res.status === 200) {
-          infoMessage.textContent = 'A verification link has been sent to your email. After verification, your account will be pending approval by the Head of Studies.';
+          infoMessage.textContent = 'Your details are sent to the Head of Studies to confirm that you are a student or teacher of Petit Seminaire Saint Leon Kabgayi.';
           infoMessage.style.display = 'block';
-          document.getElementById('signupForm').reset();
+          // Optionally, add a small delay before resetting the form
+          setTimeout(() => {
+            document.getElementById('signupForm').reset();
+            infoMessage.style.display = 'none'; // Hide message after reset
+          }, 3000); // 3-second delay
         } else {
           message.textContent = text;
           message.style.display = 'block';

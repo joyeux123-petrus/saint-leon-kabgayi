@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Attempts - Teacher View</title>
+  <link rel="stylesheet" href="styles/teacher-style.css" />
+  <style>
+    /* Add specific styles for this page if needed */
+    .container {
+      max-width: 900px;
+      margin: 50px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .table-container {
+      overflow-x: auto;
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .table th, .table td {
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    .table th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+    .table tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .table tbody tr:hover {
+      background-color: #f1f1f1;
+    }
+    .btn-details {
+      background-color: #007bff;
+      color: white;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-details:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Quiz Attempts for <span id="quiz-title"></span></h2>
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Student Name</th>
+            <th>Score</th>
+            <th>Finished At</th>
+            <th>Feedback</th>
+            <th>AI Personalization</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="attempts-table-body">
+          <!-- Quiz attempts will be loaded here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const quizId = urlParams.get('quizId');
+      const quizTitleSpan = document.getElementById('quiz-title');
+      const attemptsTableBody = document.getElementById('attempts-table-body');
+
+      if (!quizId) {
+        quizTitleSpan.textContent = 'Error: Quiz ID missing.';
+        return;
+      }
+
+      const getToken = () => localStorage.getItem('token');
+
+      const authenticatedFetch = async (url, options = {}) => {
+        const token = getToken();
+        const headers = {
+          'Content-Type': 'application/json',
+          ...
+        };
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+        const response = await fetch(url, { ...options, headers });
+        if (response.status === 401) {
+          alert('Session expired or unauthorized. Please log in again.');
+          window.location.href = 'login.html';
+          throw new Error('Unauthorized');
+        }
+        return response;
+      };
+
+      try {
+        // Fetch quiz details to display title
+        const quizResponse = await authenticatedFetch(`/api/quizzes/${quizId}`);
+        const quizData = await quizResponse.json();
+        quizTitleSpan.textContent = quizData.title || 'Unknown Quiz';
+
+        // Fetch attempts for this quiz
+        const attemptsResponse = await authenticatedFetch(`/api/quizzes/${quizId}/attempts`); // New endpoint needed
+        const attempts = await attemptsResponse.json();
+
+        if (attempts.length > 0) {
+          attemptsTableBody.innerHTML = attempts.map(attempt => `
+            <tr>
+              <td>${attempt.student_name}</td>
+              <td>${attempt.score}%</td>
+              <td>${new Date(attempt.finished_at).toLocaleString()}</td>
+              <td>${attempt.feedback ? 'View' : 'N/A'}</td>
+              <td>${attempt.ai_personalization ? 'View' : 'N/A'}</td>
+              <td><a href="quiz-attempt-details.html?attemptId=${attempt.attempt_id}" class="btn-details">View Details</a></td>
+            </tr>
+          `).join('');
+        } else {
+          attemptsTableBody.innerHTML = '<tr><td colspan="6">No attempts found for this quiz.</td></tr>';
+        }
+
+      } catch (error) {
+        console.error('Error loading quiz attempts:', error);
+        attemptsTableBody.innerHTML = '<tr><td colspan="6">Error loading quiz attempts.</td></tr>';
+      }
+    });
+  </script>
+</body>
+</html>

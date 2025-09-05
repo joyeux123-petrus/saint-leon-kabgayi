@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome Back to RUDASUMBWA</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="core.css">
+  <link rel="stylesheet" href="styles/core.css">
   <style>
     body { background: linear-gradient(120deg, #e3f0ff 0%, #f8fbff 100%); font-family: 'Inter', Arial, sans-serif; margin: 0; }
     .container { max-width: 420px; margin: 6rem auto 2rem auto; padding: 2rem; background: rgba(255,255,255,0.85); border-radius: 1.5rem; box-shadow: 0 2px 16px #17407622; }
@@ -37,10 +37,7 @@
         <input type="checkbox" id="showPassword">
         <label for="showPassword">Show Password</label>
       </div>
-        <div id="captchaBox" style="margin-bottom:1rem;">
-          <span id="captchaQuestion" style="font-weight:bold;color:#174076;"></span>
-          <input type="text" id="captchaAnswer" name="captchaAnswer" placeholder="Enter answer" style="margin-top:0.5rem;" required>
-        </div>
+      
       <div class="checkbox">
         <input type="checkbox" id="remember" name="remember">
         <label for="remember">Keep me logged in</label>
@@ -57,14 +54,9 @@
     &copy; 2025 RUDASUMBWA | Contact: info@rudasumbwa.rw
   </div>
   <script>
-      // Simple CAPTCHA logic
-      function generateCaptcha() {
-        const a = Math.floor(Math.random() * 10) + 1;
-        const b = Math.floor(Math.random() * 10) + 1;
-        document.getElementById('captchaQuestion').textContent = `What is ${a} + ${b}?`;
-        document.getElementById('captchaBox').dataset.answer = (a + b).toString();
-      }
-      generateCaptcha();
+      
+
+      
 
       document.getElementById('showPassword').onclick = function() {
         var passwordInput = document.getElementById('password');
@@ -80,8 +72,8 @@
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
         const remember = document.getElementById('remember').checked;
-        const captchaInput = document.getElementById('captchaAnswer').value.trim();
-        const captchaCorrect = document.getElementById('captchaBox').dataset.answer;
+        
+        
         const message = document.getElementById('message');
         const infoMessage = document.getElementById('infoMessage');
         const resendBtn = document.getElementById('resendVerificationBtn');
@@ -95,42 +87,50 @@
           message.style.display = 'block';
           return;
         }
-        if (captchaInput !== captchaCorrect) {
-          message.textContent = 'Incorrect CAPTCHA answer. Please try again.';
-          message.style.display = 'block';
-          generateCaptcha();
-          document.getElementById('captchaAnswer').value = '';
-          return;
-        }
+        
+        
         // Submit to backend
         try {
-          const res = await fetch('/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password, remember })
-          });
-          const data = await res.json();
-          if (res.status === 200 && data.token) {
-            // Store JWT token in localStorage
-            localStorage.setItem('token', data.token);
-            window.location.href = '/dashboard.html';
-          } else if (res.status === 403 && data.message.includes('unverified')) {
-            message.textContent = data.message;
-            message.style.display = 'block';
-            resendBtn.style.display = 'block';
-          } else if (data.message && data.message.includes('pending')) {
-            infoMessage.textContent = 'Your account is pending approval';
-            infoMessage.style.display = 'block';
-          } else if (data.message && data.message.includes('rejected')) {
-            message.textContent = 'Your account was not approved.';
-            message.style.display = 'block';
-          } else {
-            message.textContent = 'Incorrect email or password';
-            message.style.display = 'block';
-          }
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, remember })
+            });
+            const data = await res.json();
+
+            if (res.ok && data.token) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('userRole', data.role);
+                localStorage.setItem('userName', data.name);
+                localStorage.setItem('userEmail', data.email);
+                
+                // Store complete user object for easy access
+                localStorage.setItem('student_id', data.student_id);
+                localStorage.setItem('user', JSON.stringify({
+                    id: data.student_id,
+                    name: data.student_name,
+                    email: data.email,
+                    role: data.role
+                }));
+
+                if (data.role === 'admin') {
+                    window.location.href = 'admin.html';
+                } else if (data.role === 'teacher') {
+                    window.location.href = 'teacher-dashboard.html';
+                } else {
+                    window.location.href = 'student_dashboard_new.html';
+                }
+            } else {
+                message.textContent = data.message || 'Login failed. Please check your credentials.';
+                message.style.display = 'block';
+                if (data.message === 'Please verify your email address.') {
+                    resendBtn.style.display = 'block';
+                }
+            }
         } catch (err) {
-          message.textContent = 'Error logging in';
-          message.style.display = 'block';
+            console.error('Login error:', err);
+            message.textContent = 'An error occurred. Please try again later.';
+            message.style.display = 'block';
         }
       };
 

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Settings</title>
+    <link rel="stylesheet" href="styles/teacher-dashboard.css"> <!-- Reusing dashboard styles for consistency -->
+    <style>
+        .settings-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        .settings-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+        .settings-card h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 15px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .info-item strong {
+            color: #555;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #333;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1002;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="teacher-dashboard.html" class="logo-container">
+                    <img src="images/logo.PNG" alt="School Logo" class="logo-img">
+                    <span class="school-name">Petit Seminaire Saint Leon Kabgayi</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="settings-container">
+        <a href="teacher-dashboard.html" class="btn" style="margin-bottom: 20px;">&larr; Back to Dashboard</a>
+        
+        <!-- Profile Information -->
+        <div class="settings-card">
+            <h2>Profile Information</h2>
+            <div id="profile-info-container" class="info-grid">
+                <p>Loading profile...</p>
+            </div>
+        </div>
+
+        <!-- Update Name -->
+        <div class="settings-card">
+            <h2>Update Name</h2>
+            <form id="update-name-form">
+                <div class="form-group">
+                    <label for="full-name">Full Name</label>
+                    <input type="text" id="full-name" required>
+                </div>
+                <button type="submit" class="btn">Update Name</button>
+            </form>
+        </div>
+
+        <!-- Change Password -->
+        <div class="settings-card">
+            <h2>Change Password</h2>
+            <form id="change-password-form">
+                <div class="form-group">
+                    <label for="current-password">Current Password</label>
+                    <input type="password" id="current-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-password">New Password</label>
+                    <input type="password" id="new-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm New Password</label>
+                    <input type="password" id="confirm-password" required>
+                </div>
+                <button type="submit" class="btn">Change Password</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast-notification" class="toast"></div>
+
+    <script src="js/profile-settings.js"></script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="styles/student_dashboard_new.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="student_dashboard_new.html" class="logo-container">
+                    <img src="images/logo.PNG" alt="School Logo" class="logo-img">
+                    <span class="school-name">Petit Seminaire Saint Leon Kabgayi</span>
+                </a>
+            </div>
+            <div class="nav-menu" id="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item"><a href="available_notes.html" class="nav-link">My Notes</a></li>
+                    <li class="nav-item"><a href="available-quizzes.html" class="nav-link">Take Quiz</a></li>
+                    <li class="nav-item"><a href="quiz-attempts-student.html" class="nav-link">My Quizzes</a></li>
+                    <li class="nav-item"><a href="student-analytics.html" class="nav-link">My Analytics</a></li>
+                    <li class="nav-item"><a href="spiritual.html" class="nav-link">Spiritual</a></li>
+                    <li class="nav-item profile-dropdown-container">
+                        <button id="profile-dropdown-btn" class="profile-dropdown-btn">
+                            <i class="fas fa-user-circle profile-avatar-icon"></i>
+                            <span id="profile-name-nav">User</span>
+                            <i class="fas fa-caret-down"></i>
+                        </button>
+                        <div id="profile-dropdown-menu" class="profile-dropdown-menu">
+                            <a href="profile-settings.html" class="dropdown-item">Profile Settings</a>
+                            <a href="#" id="logout-btn" class="dropdown-item">Logout</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="nav-toggle" id="nav-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Header Section -->
+        <div class="header">
+            <div class="welcome-section">
+                <div class="student-avatar">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
+                <div class="student-info">
+                    <h1 id="welcome-message">Welcome, Student!</h1>
+                    <p>Your central hub for managing your studies.</p>
+                </div>
+            </div>
+            <div class="date-time">
+                <div id="current-date" style="font-size: 16px; font-weight: 600; color: #333;"></div>
+                <div id="current-time" style="font-size: 14px; margin-top: 5px;"></div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Upcoming Events -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon events-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3 class="card-title">Upcoming Events</h3>
+                </div>
+                <div id="events-list">
+                    <p>Loading events...</p>
+                </div>
+            </div>
+
+            <!-- Latest Announcements -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon announcements-icon">
+                        <i class="fas fa-bullhorn"></i>
+                    </div>
+                    <h3 class="card-title">Latest Announcements</h3>
+                </div>
+                <div id="announcements-list">
+                    <p>Loading announcements...</p>
+                </div>
+            </div>
+
+            <!-- Leaderboard -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon leaderboard-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3 class="card-title">Class Leaderboard</h3>
+                </div>
+                <div id="leaderboard-list">
+                     <p>Loading leaderboard...</p>
+                </div>
+            </div>
+
+            <!-- Recent Quizzes -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon quiz-icon">
+                        <i class="fas fa-clipboard-check"></i>
+                    </div>
+                    <h3 class="card-title">Recent Quizzes</h3>
+                </div>
+                <div id="quizzes-list">
+                    <p>Loading recent quizzes...</p>
+                </div>
+            </div>
+
+            
+
+            <!-- Holy Gospel of the Day -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon gospel-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h3 class="card-title">Gospel of the Day</h3>
+                </div>
+                <div id="gospel-content" class="gospel-text">
+                    <p>Loading gospel...</p>
+                </div>
+            </div>
+
+            <!-- Enrolled Courses -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon courses-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h3 class="card-title">Enrolled Courses</h3>
+                </div>
+                <div id="enrolled-courses-list">
+                    <p>Loading courses...</p>
+                </div>
+            </div>
+
+            <!-- Clubs Section -->
+            <div class="card" id="clubs-section">
+                <div class="card-header">
+                    <div class="card-icon clubs-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="card-title">Clubs</h3>
+                </div>
+                <div class="clubs-grid">
+                    <p>Loading clubs...</p>
+                </div>
+            </div>
+
+            <!-- Peter AI Assistant -->
+            <div class="card ai-assistant">
+                <div class="card-header" style="color: white;">
+                    <div class="card-icon" style="background: rgba(255, 255, 255, 0.2);">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 class="card-title">Peter AI Assistant</h3>
+                </div>
+                <div class="ai-avatar">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <div style="font-weight: 600; margin-bottom: 5px;">Ready to Help!</div>
+                    <div style="font-size: 14px; opacity: 0.9;">Ask about your courses, assignments, or get help with your studies.</div>
+                </div>
+                <button class="btn" style="background: rgba(255, 255, 255, 0.2); margin-top: 15px; width: 100%;" onclick="window.location.href='ai_tutor.html'">
+                    <i class="fas fa-comments"></i> Start Conversation
+                </button>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <!-- Note Detail Modal -->
+    <div id="note-detail-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Note Details</h2>
+            <div id="modal-note-content">
+                <!-- Note content will be loaded here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/student_dashboard_new.js"></script>
+</body>
+</html>

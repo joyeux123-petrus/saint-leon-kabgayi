@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">s
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Spirituals</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 1rem;
+        }
+        .card-subtitle {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+        .card-text {
+            color: #4a5568;
+            line-height: 1.6;
+        }
+        .section-divider {
+            border-top: 1px solid #e2e8f0;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-4xl font-bold text-gray-800 mb-8 text-center">Daily Spirituals</h1>
+
+        
+
+        <div id="usccb-content" class="space-y-6">
+            <!-- USCCB Content will be loaded here by JavaScript -->
+            <div class="card">
+                <p class="text-gray-500 text-center">Loading USCCB data...</p>
+            </div>
+        </div>
+
+        
+
+        <div id="usccb-error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <strong class="font-bold">USCCB Error!</strong>
+            <span class="block sm:inline" id="usccb-error-text">Failed to load USCCB data. Please try again later.</span>
+        </div>
+    </div>
+
+    <script src="js/usccb-service.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+        });
+    </script>
+</body>
+</html>

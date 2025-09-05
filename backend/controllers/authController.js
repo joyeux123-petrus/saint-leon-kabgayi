@@ -258,16 +258,16 @@ const resendVerificationEmail = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
   const [rows] = await db.promise().query('SELECT * FROM users WHERE email=?', [email]);
-  if (!rows.length) return res.status(400).send('Incorrect email or password');
+  if (!rows.length) return res.status(400).send('You don\'t have an account on Rudasumbwa website');
   const user = rows[0];
   const match = await bcrypt.compare(password, user.password);
-  if (!match) return res.status(400).send('Incorrect email or password');
+  if (!match) return res.status(400).send('Wrong password');
   if (user.status === 'unverified') return res.status(403).send('Your email is not verified. Please check your email for a verification link.');
   if (user.status === 'pending') return res.status(403).send('⏳ Your personal details are still under review by the Head of Studies.');
   if (user.status === 'rejected') return res.status(403).send('❌ Your account was not approved. Please contact the school.');
   // JWT for session
-  const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' });
-  res.json({ token, message: 'Login successful!' });
+  const token = jwt.sign({ id: user.id, role: user.role, class_name: user.class_name }, process.env.JWT_SECRET, { expiresIn: '1d' });
+  res.json({ token, message: 'Login successful!', student_id: user.id, student_name: user.name, role: user.role });
 };
 module.exports = {
   verifyEmail,

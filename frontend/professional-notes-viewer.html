@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Note Viewer</title>
+    <link rel="stylesheet" href="css/professional-notes-viewer.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <div class="header-top">
+                <div class="title-section">
+                    <h1 id="note-title">Loading...</h1>
+                    <div class="course-info" id="course-info"></div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn" onclick="toggleBookmark()">
+                        📚 Bookmark
+                    </button>
+                    <button class="btn" onclick="toggleFocusMode()">
+                        🎯 Focus Mode
+                    </button>
+                    <button class="btn" onclick="downloadPDF()">
+                        📄 Download PDF
+                    </button>
+                    <button class="btn" onclick="shareNote()">
+                        📤 Share
+                    </button>
+                    <button class="btn" onclick="toggleDarkMode()">
+                        🌙 Dark Mode
+                    </button>
+                    <button class="btn btn-primary" onclick="readAloud()">
+                        🔊 Read Aloud
+                    </button>
+                </div>
+            </div>
+            
+            <div class="metadata">
+                <div class="meta-item">
+                    <div class="meta-label">Subject</div>
+                    <div class="meta-value" id="note-subject"></div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Description</div>
+                    <div class="meta-value" id="note-description"></div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Tags</div>
+                    <div class="tags" id="note-tags">
+                    </div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Estimated Duration</div>
+                    <div class="meta-value" id="note-duration"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="progress-section">
+            <div class="progress-header">
+                <h2 class="progress-title">Your Progress</h2>
+                <div class="progress-percentage">0%</div>
+            </div>
+            
+            <div class="progress-bar-container">
+                <div class="progress-bar" style="width: 0%"></div>
+            </div>
+            
+            <div class="progress-stats">
+                <div class="stat">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Points Earned</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">In Progress</div>
+                    <div class="stat-label">Status</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">None yet</div>
+                    <div class="stat-label">Badge Earned</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls Panel -->
+        <div class="controls-panel">
+            <div class="controls-grid">
+                <div class="control-group">
+                    <label class="control-label">Font Family</label>
+                    <select class="control-input" onchange="changeFontFamily(this.value)">
+                        <option value="system">System Default</option>
+                        <option value="serif">Serif</option>
+                        <option value="monospace">Monospace</option>
+                        <option value="dyslexic">OpenDyslexic</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Font Size</label>
+                    <select class="control-input" onchange="changeFontSize(this.value)">
+                        <option value="small">Small</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="large">Large</option>
+                        <option value="xl">Extra Large</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Reading Speed</label>
+                    <select class="control-input" onchange="changeReadingSpeed(this.value)">
+                        <option value="slow">Slow</option>
+                        <option value="normal" selected>Normal</option>
+                        <option value="fast">Fast</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Annotations</label>
+                    <button class="btn" onclick="toggleAnnotations()">
+                        📝 Show/Hide Annotations
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <div class="content-placeholder">
+                <h3>📖 Your note content will appear here</h3>
+                <p>This is where the actual note content, text, images, and annotations will be displayed.</p>
+                <p>The content area adapts to your font preferences and reading settings.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/professional-notes-viewer.js"></script>
+</body>
+</html>

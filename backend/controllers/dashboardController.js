@@ -1,52 +1,38 @@
-const db = require('../models/db');
+const db = require('../db');
 
 exports.getDashboardStats = async (req, res) => {
   try {
-    const [[{ totalStudents }]] = await db.query("SELECT COUNT(*) AS totalStudents FROM users WHERE role = 'student'");
-    const [[{ totalTeachers }]] = await db.query("SELECT COUNT(*) AS totalTeachers FROM users WHERE role = 'teacher'");
-    const [[{ pendingSignups }]] = await db.query("SELECT COUNT(*) AS pendingSignups FROM users WHERE status = 'pending'");
-    const [[{ totalQuizzes }]] = await db.query('SELECT COUNT(*) AS totalQuizzes FROM quizzes');
-    const [[{ totalClubs }]] = await db.query('SELECT COUNT(*) AS totalClubs FROM clubs');
-    const [[{ upcomingEvents }]] = await db.query("SELECT COUNT(*) AS upcomingEvents FROM events WHERE date > NOW()");
+    // Assuming the user is a teacher and we want stats relevant to them
+    const teacherId = req.user.id; 
 
-    res.json({ 
-        totalStudents,
-        totalTeachers,
-        pendingSignups,
-        totalQuizzes,
-        totalClubs,
-        upcomingEvents
-     });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch dashboard stats.' });
-  }
-};
+    // Number of quizzes created by this teacher
+    const [quizzesCreatedResult] = await db.promise().query('SELECT COUNT(*) as count FROM quizzes WHERE created_by = ?', [teacherId]);
+    const quizzesCreated = quizzesCreatedResult[0].count;
 
-exports.getRecentActivity = async (req, res) => {
-  try {
-    // Example: fetch recent activity from database
-    const [activity] = await db.query('SELECT * FROM activity_log ORDER BY timestamp DESC LIMIT 10');
-    res.json({ activity });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch recent activity.' });
-  }
-};
+    // Number of classes managed by this teacher (assuming teacherClass in users table)
+    const [teacherClassResult] = await db.promise().query('SELECT teacherClass FROM users WHERE id = ?', [teacherId]);
+    const teacherClass = teacherClassResult[0]?.teacherClass;
+    let classesManaged = 0;
+    if (teacherClass) {
+      classesManaged = 1; // Simple count, could be more complex if a teacher manages multiple distinct classes
+    }
 
-exports.getUpcomingEvents = async (req, res) => {
-  try {
-    const [events] = await db.query('SELECT * FROM events WHERE date > NOW() ORDER BY date ASC LIMIT 10');
-    res.json({ events });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch upcoming events.' });
-  }
-};
+    // Number of students enrolled in their classes (this is a simplification)
+    // This would ideally involve joining users with classes taught by the teacher
+    const [studentsEnrolledResult] = await db.promise().query('SELECT COUNT(*) as count FROM users WHERE role = ? AND className = ?', ['student', teacherClass]);
+    const studentsEnrolled = studentsEnrolledResult[0].count;
 
-exports.getPerformanceData = async (req, res) => {
-  try {
-    // Example: fetch performance data
-    const [performance] = await db.query('SELECT * FROM performance_metrics WHERE user_id = ?', [req.user.id]);
-    res.json({ performance });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch performance data.' });
+    // Placeholder for events organized (needs an events table and logic)
+    const eventsOrganized = 0; 
+
+    res.status(200).json({
+      quizzesCreated,
+      classesManaged,
+      studentsEnrolled,
+      eventsOrganized
+    });
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error);
+    res.status(500).json({ message: 'Error fetching dashboard stats' });
   }
 };

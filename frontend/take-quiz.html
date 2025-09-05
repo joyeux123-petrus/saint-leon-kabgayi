@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take Quiz | Saint Leon</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles/quiz-professional.css">
+</head>
+<body>
+    <div class="main-container">
+        <header class="quiz-header">
+            <div class="header-content">
+                <h1 id="quiz-title">Loading Quiz...</h1>
+                <div class="header-actions">
+                    <div id="timer" class="timer">
+                        <i class="ri-time-line"></i>
+                        <span id="time-left">00:00</span>
+                    </div>
+                    <button id="dark-mode-toggle" class="dark-mode-toggle">
+                        <i class="ri-sun-line"></i>
+                        <i class="ri-moon-line"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="progress-section">
+            <div class="progress-info">
+                <span id="step-indicator">Question 0 of 0</span>
+                <span id="completion-percentage">0%</span>
+            </div>
+            <div class="progress-bar-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+        </div>
+
+        <main id="quiz-content" class="quiz-content">
+            <!-- Question content will be dynamically injected here -->
+            <div class="loader-container">
+                <div class="loader"></div>
+                <p>Loading questions...</p>
+            </div>
+        </main>
+
+        <footer class="quiz-footer">
+            <button id="prev-question-btn" class="btn btn-secondary" disabled>
+                <i class="ri-arrow-left-s-line"></i>
+                Previous
+            </button>
+            <button id="next-question-btn" class="btn btn-primary">
+                Next
+                <i class="ri-arrow-right-s-line"></i>
+            </button>
+            <button id="submit-quiz-btn" class="btn btn-submit" style="display: none;">
+                <i class="ri-check-line"></i>
+                Submit Quiz
+            </button>
+        </footer>
+    </div>
+
+    <script src="js/take-quiz-professional.js"></script>
+</body>
+</html>
